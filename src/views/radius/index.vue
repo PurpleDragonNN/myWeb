@@ -26,9 +26,9 @@ interface ValueObject {
   [propName:string]: any
 }
 
-let beforeUrl: ValueObject = ref('')
-let afterUrl: ValueObject = ref('')
-let downloadUrl: ValueObject = ref('')
+let beforeUrl = ref('')
+let afterUrl = ref('')
+let downloadUrl = ref('')
 
 let isMobile = window.innerHeight > window.innerWidth
 let radiusVal = ref(50)
@@ -45,9 +45,6 @@ afterUrl = ref('')
 }
 beforeUrl.value = getImage('wx-share.png')*/
 onMounted(() => {
-
-  console.log('afterImgEl:',afterImgEl!.value);
-
   // 初始化示例
   setTimeout(() => {
     let afterTransform: any = circleRect_image({
@@ -73,14 +70,13 @@ onMounted(() => {
       let beforeTransform:HTMLElement | null = document.querySelector('.before-transform')
       beforeTransform!.setAttribute('src', reader.result)
       setTimeout(() => {
-        let afterTransform = circleRect_image({
+        let afterTransform:any = circleRect_image({
           img: document.querySelector('.before-transform'),
           type: 1,
           radius: radiusVal.value * (beforeImgEl!.value!.naturalWidth/750)
         })
         afterUrl.value = afterTransform
         downloadUrl.value = afterTransform
-
       },500)
     })
   }
@@ -133,7 +129,7 @@ function circleRect_image(option:ValueObject ) {
   ctx.restore();
 
 // 画圆角矩形
-  function roundedRect(ctx, x, y, width, height, radius) {
+  function roundedRect(ctx:any, x:number, y:number, width:number, height:number, radius:number) {
     ctx.strokeStyle = "#fff";
     ctx.beginPath();
     ctx.moveTo(x, y + radius);
