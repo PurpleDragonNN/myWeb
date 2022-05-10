@@ -62,7 +62,7 @@ onMounted(() => {
     reader.addEventListener('load',() => {
       //预览图片链接
       console.log(reader.result);
-      beforeUrl = reader.result
+      beforeUrl.value = reader.result
       setTimeout(() => {
         let afterTransform:any = circleRect_image({
           img: beforeImgEl!.value!,
