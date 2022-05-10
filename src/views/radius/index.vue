@@ -26,7 +26,7 @@ interface ValueObject {
   [propName:string]: any
 }
 
-let beforeUrl = ref('')
+let beforeUrl = ref(getImage('head.png'))
 let afterUrl = ref('')
 let downloadUrl = ref('')
 
@@ -36,19 +36,15 @@ let radiusVal = ref(50)
 let afterImgEl: ValueObject | null = ref(null)
 let beforeImgEl: ValueObject | null = ref(null)
 
-beforeUrl = ref('src/assets/radius/img/wx-share.png')
-afterUrl = ref('')
 
-
-/*const getImage = (name: string): string => {
+function getImage (name: string): string {
   return new URL(`../../assets/radius/img/${name}`, import.meta.url).href
 }
-beforeUrl.value = getImage('wx-share.png')*/
 onMounted(() => {
   // 初始化示例
   setTimeout(() => {
     let afterTransform: any = circleRect_image({
-      img: document.querySelector('.before-transform'),
+      img: beforeImgEl!.value,
       type: 1,
       // 不同分辨率图片下圆角效果不一致，故按比例转换
       radius: radiusVal.value * (beforeImgEl!.value!.naturalWidth/750)
@@ -57,21 +53,19 @@ onMounted(() => {
     downloadUrl.value = afterTransform
   },300)
 
-
   // 上传事件
   let uploadBtn:HTMLElement | null = document.querySelector('.upload-btn')
   uploadBtn!.onchange = function (img:ValueObject){
     let file = img.target.files[0]
     let reader:ValueObject = new FileReader()
-    let loop = 0
     reader.readAsDataURL(file)
     reader.addEventListener('load',() => {
       //预览图片链接
-      let beforeTransform:HTMLElement | null = document.querySelector('.before-transform')
-      beforeTransform!.setAttribute('src', reader.result)
+      console.log(reader.result);
+      beforeUrl = reader.result
       setTimeout(() => {
         let afterTransform:any = circleRect_image({
-          img: document.querySelector('.before-transform'),
+          img: beforeImgEl!.value!,
           type: 1,
           radius: radiusVal.value * (beforeImgEl!.value!.naturalWidth/750)
         })
