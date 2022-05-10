@@ -4,7 +4,10 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            redirect: '/radius'
+            redirect: '/radius',
+            meta: {
+                title: '圆角矩形切割'
+            }
         },
         {
             path: '/radius',
@@ -15,6 +18,11 @@ const router = createRouter({
             }
         }
     ]
+})
+router.beforeEach((to,from,next) => {
+    let dom:any = window.document
+    dom.title = to.meta.title
+    next()
 })
 
 export default router;
