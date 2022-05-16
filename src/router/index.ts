@@ -19,7 +19,11 @@ const router = createRouter({
         }
     ]
 })
-router.beforeEach((to,from,next) => {
+interface ValueObject {
+    [propName:string]: any
+}
+
+router.beforeEach((to:ValueObject,from:ValueObject,next:any) => {
     let dom:any = window.document
     dom.title = to.meta.title
     next()

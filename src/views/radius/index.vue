@@ -1,10 +1,10 @@
 <template>
-  <div class="container" :class="{'mobile': isMobile}">
+  <div class="container">
     <div class="input-block">
       <input type="file" class="upload-btn">
       <input type="number" :value="radiusVal" placeholder="请输入圆角矩形的半径" class="radius">
     </div>
-
+    <nut-button type="primary">主要按钮</nut-button>
     <div class="show">
       <a :href="downloadUrl" download="图片" class="download-btn">
         <p>转换后（点击下载）:</p>
@@ -26,11 +26,10 @@ interface ValueObject {
   [propName:string]: any
 }
 
-let beforeUrl = ref(getImage('head.png'))
+let beforeUrl = ref(getImage('wx-share.png'))
 let afterUrl = ref('')
 let downloadUrl = ref('')
 
-let isMobile = window.innerHeight > window.innerWidth
 let radiusVal = ref(50)
 
 let afterImgEl: ValueObject | null = ref(null)
@@ -141,19 +140,9 @@ function circleRect_image(option:ValueObject ) {
 </script>
 
 
-<style lang="scss">
-body{
-  background: rgb(193, 230, 198);
-
-}
-</style>
 <style lang="scss" scoped>
-img{
-  width: 500px;
-}
 .container{
-  width: 1024px;
-  margin: 50px auto;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -172,43 +161,8 @@ img{
   }
 
   .show{
-    display: flex;
-    justify-content: space-between;
     width: 100%;
-    &>*{
-      width: 49%;
-    }
   }
-
-  &.mobile{
-    width: 100%;
-    padding: 2vw;
-    img{
-      width: 100%;
-    }
-    .upload-btn{
-      margin-bottom: 5vw;
-    }
-    .show{
-      font-size: 5vw;
-      flex-direction: column;
-      &>*{
-        width: auto;
-      }
-    }
-    .input-block{
-      display: flex;
-      flex-direction: column;
-    }
-    input{
-      font-size: 5vw;
-      width: 90%;
-    }
-    .download-btn{
-      font-size: 5vw;
-    }
-  }
-
 }
 
 
