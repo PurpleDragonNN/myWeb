@@ -1,10 +1,13 @@
 <template>
   <div class="container">
     <div class="input-block">
-      <input type="file" class="upload-btn">
-      <input type="number" :value="radiusVal" placeholder="请输入圆角矩形的半径" class="radius">
+      <nut-uploader @failure="uploadFailure" class="upload-btn">
+      </nut-uploader>
+      <!--        <nut-button type="success">上传文件</nut-button>-->
+
+      <nut-inputnumber v-model="radiusVal" />
+<!--      <input type="number" :value="radiusVal" placeholder="请输入圆角矩形的半径" class="radius">-->
     </div>
-    <nut-button type="primary">主要按钮</nut-button>
     <div class="show">
       <a :href="downloadUrl" download="图片" class="download-btn">
         <p>转换后（点击下载）:</p>
@@ -52,10 +55,12 @@ onMounted(() => {
     downloadUrl.value = afterTransform
   },300)
 
+return
   // 上传事件
   let uploadBtn:HTMLElement | null = document.querySelector('.upload-btn')
   uploadBtn!.onchange = function (img:ValueObject){
     let file = img.target.files[0]
+    console.log({file})
     let reader:ValueObject = new FileReader()
     reader.readAsDataURL(file)
     reader.addEventListener('load',() => {
@@ -75,6 +80,23 @@ onMounted(() => {
 })
 
 
+function uploadFailure({responseText,option,fileItem}) {
+  console.log({fileItem});
+  //预览图片链接
+  beforeUrl.value = fileItem.url
+  setTimeout(() => {
+    let afterTransform:any = circleRect_image({
+      img: beforeImgEl!.value,
+      type: 1,
+      radius: radiusVal.value * (beforeImgEl!.value!.naturalWidth/750)
+    })
+    afterUrl.value = afterTransform
+    downloadUrl.value = afterTransform
+  },500)
+
+}
+
+
 
 /**
  * 把图片处理成圆角矩形
@@ -84,7 +106,6 @@ onMounted(() => {
  * @return {string}     return base64 png图片字符串
  */
 function circleRect_image(option:ValueObject ) {
-  console.log(option);
   var img = option.img;
   var type = option.type || 0;
   var radius = option.radius || 0;
@@ -142,13 +163,19 @@ function circleRect_image(option:ValueObject ) {
 
 <style lang="scss" scoped>
 .container{
+  padding: 10px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
 
+  .btn{
+    //width: 140px;
+  }
   .input-block{
+    display: flex;
+    justify-content: space-around;
     width: 100%;
     input{
       width: 49%;
@@ -162,6 +189,10 @@ function circleRect_image(option:ValueObject ) {
 
   .show{
     width: 100%;
+    img{
+      max-width: 100%;
+
+    }
   }
 }
 
