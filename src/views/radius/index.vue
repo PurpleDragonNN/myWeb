@@ -1,8 +1,15 @@
 <template>
   <div class="container">
-    <nut-uploader @failure="uploadFailure" :file-list="defaultFileList"  ref="uploaderEl" class="upload-btn"></nut-uploader>
+    <nut-row>
+      <nut-col :span="12">
+        <nut-uploader @failure="uploadFailure" :file-list="defaultFileList"  ref="uploaderEl" class="upload-btn"></nut-uploader>
 
-    <nut-range v-model="radiusVal"></nut-range>
+      </nut-col>
+      <nut-inputnumber v-model="radiusVal"  button-size="30" input-width="50" />
+
+
+    </nut-row>
+
     <nut-divider />
 
     <div class="show">
@@ -133,7 +140,8 @@ function circleRect_image(option:ValueObject ) {
 
 <style lang="scss" scoped>
 .container{
-  padding: 20px;
+  background: rgb(193, 230, 198);
+  padding: 50px 20px 0;
   width: 100%;
   height: 100vh;
   overflow: auto;
@@ -146,7 +154,6 @@ function circleRect_image(option:ValueObject ) {
 
   .upload-btn{
     width: 100%;
-    margin: 50px 0;
   }
   .nut-divider{
     width: 100%;

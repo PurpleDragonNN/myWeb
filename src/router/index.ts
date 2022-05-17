@@ -14,7 +14,19 @@ const router = createRouter({
             name: 'radius',
             component: ()=>import('../views/radius/index.vue'),
             meta: {
-                title: '圆角矩形切割'
+                title: '圆角矩形切割',
+                name: '圆角',
+                icon: 'check-normal'
+            }
+        },
+        {
+            path: '/christmas',
+            name: 'christmas',
+            component: ()=>import('../views/christmas/index.vue'),
+            meta: {
+                title: 'Dorana,Merry Christmas!',
+                name: '圣诞',
+                icon: 'follow'
             }
         }
     ]
