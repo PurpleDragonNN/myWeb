@@ -13,7 +13,7 @@ export default defineConfig({
             plugins: [
                 pxTOViewport({
                     unitToConvert: 'px', // 要转化的单位
-                    viewportWidth: 375, // UI设计稿的宽度
+                    viewportWidth: 750, // UI设计稿的宽度
                     // viewportHeight: 667, // UI设计稿的高度
                     unitPrecision: 6, // 转换后的精度，即小数点位数
                     propList: ['*'], // 指定转换的css属性的单位，*代表全部css属性的单位都进行转换

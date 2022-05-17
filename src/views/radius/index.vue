@@ -1,19 +1,16 @@
 <template>
   <div class="container">
-    <div class="input-block">
-      <nut-uploader @failure="uploadFailure" class="upload-btn">
-      </nut-uploader>
-      <!--        <nut-button type="success">上传文件</nut-button>-->
+    <nut-uploader @failure="uploadFailure" v-model:file-list="defaultFileList"  ref="uploaderEl" class="upload-btn"></nut-uploader>
 
-      <nut-inputnumber v-model="radiusVal" />
-<!--      <input type="number" :value="radiusVal" placeholder="请输入圆角矩形的半径" class="radius">-->
-    </div>
+    <nut-range v-model="radiusVal"></nut-range>
+    <nut-divider />
+
     <div class="show">
-      <a :href="downloadUrl" download="图片" class="download-btn">
-        <p>转换后（点击下载）:</p>
+      <a :href="downloadUrl" v-if="afterUrl" download="图片" class="download-btn">
+        <p>转换后（{{isWeixin? '长按图片保存':'点击下载'}}）:</p>
         <img ref="afterImgEl" :src="afterUrl" alt="" class="after-transform">
       </a>
-      <div>
+      <div v-if="beforeUrl">
         <p>转换前:</p>
         <img ref="beforeImgEl" :src="beforeUrl" alt="" class="before-transform">
       </div>
@@ -29,20 +26,24 @@ interface ValueObject {
   [propName:string]: any
 }
 
-let beforeUrl = ref(getImage('wx-share.png'))
+let beforeUrl = ref('')
 let afterUrl = ref('')
 let downloadUrl = ref('')
+let isWeixin = ref(window.navigator.userAgent.toLowerCase().match(/MicroMessenger/i) == "micromessenger")
 
 let radiusVal = ref(50)
+let defaultFileList: ValueObject = ref([])
 
 let afterImgEl: ValueObject | null = ref(null)
 let beforeImgEl: ValueObject | null = ref(null)
+let uploaderEl: ValueObject | null = ref(null)
+
 
 
 function getImage (name: string): string {
   return new URL(`../../assets/radius/img/${name}`, import.meta.url).href
 }
-onMounted(() => {
+/*onMounted(() => {
   // 初始化示例
   setTimeout(() => {
     let afterTransform: any = circleRect_image({
@@ -54,34 +55,11 @@ onMounted(() => {
     afterUrl.value = afterTransform
     downloadUrl.value = afterTransform
   },300)
+})*/
 
-return
-  // 上传事件
-  let uploadBtn:HTMLElement | null = document.querySelector('.upload-btn')
-  uploadBtn!.onchange = function (img:ValueObject){
-    let file = img.target.files[0]
-    console.log({file})
-    let reader:ValueObject = new FileReader()
-    reader.readAsDataURL(file)
-    reader.addEventListener('load',() => {
-      //预览图片链接
-      beforeUrl.value = reader.result
-      setTimeout(() => {
-        let afterTransform:any = circleRect_image({
-          img: beforeImgEl!.value!,
-          type: 1,
-          radius: radiusVal.value * (beforeImgEl!.value!.naturalWidth/750)
-        })
-        afterUrl.value = afterTransform
-        downloadUrl.value = afterTransform
-      },500)
-    })
-  }
-})
-
-
+// 上传回调
 function uploadFailure({responseText,option,fileItem}) {
-  console.log({fileItem});
+  defaultFileList.value[0].status = 'success'
   //预览图片链接
   beforeUrl.value = fileItem.url
   setTimeout(() => {
@@ -95,7 +73,6 @@ function uploadFailure({responseText,option,fileItem}) {
   },500)
 
 }
-
 
 
 /**
@@ -158,37 +135,37 @@ function circleRect_image(option:ValueObject ) {
   }
   return canvas.toDataURL('image/png');
 }
+
+
 </script>
 
 
 <style lang="scss" scoped>
 .container{
-  padding: 10px;
+  padding: 20px;
   width: 100%;
+  height: 100vh;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
+  font-size: 34px;
+  color: #333;
 
-  .btn{
-    //width: 140px;
-  }
-  .input-block{
-    display: flex;
-    justify-content: space-around;
+  .upload-btn{
     width: 100%;
-    input{
-      width: 49%;
-    }
-    .radius{
-      width: 150px;
-      border: 1px solid #999;
-      outline: none;
-    }
+    margin: 50px 0;
+  }
+  .nut-divider{
+    width: 100%;
   }
 
   .show{
     width: 100%;
+    a{
+      color: #333;
+    }
     img{
       max-width: 100%;
 
