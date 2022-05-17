@@ -9,7 +9,7 @@
 
 <style>
 .ignore-container{
-  background: rgba(193, 230, 198,.3);
+  background: rgb(193, 230, 198);
   max-width: 500px;
   margin: 0 auto;
   width: 100%;

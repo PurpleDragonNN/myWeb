@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <nut-uploader @failure="uploadFailure" v-model:file-list="defaultFileList"  ref="uploaderEl" class="upload-btn"></nut-uploader>
+    <nut-uploader @failure="uploadFailure" :file-list="defaultFileList"  ref="uploaderEl" class="upload-btn"></nut-uploader>
 
     <nut-range v-model="radiusVal"></nut-range>
     <nut-divider />
@@ -29,10 +29,11 @@ interface ValueObject {
 let beforeUrl = ref('')
 let afterUrl = ref('')
 let downloadUrl = ref('')
+// @ts-ignore
 let isWeixin = ref(window.navigator.userAgent.toLowerCase().match(/MicroMessenger/i) == "micromessenger")
 
 let radiusVal = ref(50)
-let defaultFileList: ValueObject = ref([])
+let defaultFileList:any = ref([])
 
 let afterImgEl: ValueObject | null = ref(null)
 let beforeImgEl: ValueObject | null = ref(null)
@@ -44,21 +45,11 @@ function getImage (name: string): string {
   return new URL(`../../assets/radius/img/${name}`, import.meta.url).href
 }
 /*onMounted(() => {
-  // 初始化示例
-  setTimeout(() => {
-    let afterTransform: any = circleRect_image({
-      img: beforeImgEl!.value,
-      type: 1,
-      // 不同分辨率图片下圆角效果不一致，故按比例转换
-      radius: radiusVal.value * (beforeImgEl!.value!.naturalWidth/750)
-    })
-    afterUrl.value = afterTransform
-    downloadUrl.value = afterTransform
-  },300)
 })*/
 
 // 上传回调
-function uploadFailure({responseText,option,fileItem}) {
+// @ts-ignore
+function uploadFailure({fileItem}) {
   defaultFileList.value[0].status = 'success'
   //预览图片链接
   beforeUrl.value = fileItem.url
@@ -83,10 +74,10 @@ function uploadFailure({responseText,option,fileItem}) {
  * @return {string}     return base64 png图片字符串
  */
 function circleRect_image(option:ValueObject ) {
-  var img = option.img;
-  var type = option.type || 0;
-  var radius = option.radius || 0;
-  var imgSize, canvas, ctx:any;
+  let img = option.img;
+  let type = option.type || 0;
+  let radius = option.radius || 0;
+  let imgSize, canvas, ctx:any;
   if (type){
     imgSize = {
       width: img.naturalWidth,
