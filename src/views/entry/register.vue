@@ -2,8 +2,12 @@
     <div class="container">
         <nut-form :model-value="formData" ref="ruleForm">
             <nut-form-item label="用户名" prop="userName" required :rules="rules.userName">
-                <input class="nut-input-text" @blur="customBlurValidate('name')" v-model="formData.userName"
-                       placeholder="请输入姓名，blur 事件校验" type="text"/>
+                <input class="nut-input-text" v-model="formData.userName"
+                       placeholder="请输入姓名" type="text"/>
+            </nut-form-item>
+            <nut-form-item label="密码" prop="password" required :rules="rules.password">
+                <input class="nut-input-text" v-model="formData.password"
+                       placeholder="请输入密码" type="password"/>
             </nut-form-item>
             <nut-form-item label="手机号码" prop="phone" required :rules="rules.phone">
                 <input class="nut-input-text" v-model="formData.phone" placeholder="请输入手机号码" type="text"/>
@@ -20,7 +24,7 @@
 import {ref, onMounted, reactive} from "vue";
 import {mainStore} from '../../store'
 
-const {testDB} = window.dataBase
+const {testDB, queryDB} = window.dataBase
 
 interface ValueObject {
     [propName: string]: any
@@ -32,15 +36,16 @@ const formData = reactive({
     userName: '',
     password: '',
     phone: '',
-    address: ''
 });
 const ruleForm = ref<any>(null);
+const phoneValidator = (val:string) => /^1(3[0-9]|4[01456879]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[0-35-9])\d{8}$/.test(val)
 
 const rules = reactive({
     userName: [{ required: true, message: '请填写用户名' }],
+    password: [{ required: true, message: '请填写密码' }],
     phone: [
         { required: true, message: '请填写联系电话' },
-        { validator: asyncValidator, message: '电话格式不正确' }
+        { validator: phoneValidator, message: '手机号码格式不正确' }
     ]
 })
 
@@ -63,11 +68,13 @@ const register = () => {
     })
 }
 
-const getInfo = () => {
-
+const getInfo = (key:string) => {
+    queryDB.get(key).then(res => {
+        console.log(res);
+    })
 }
 
-getInfo('userName')
+getInfo('6284b0996cdbd3408025fb43')
 /*onMounted(() => {
 })*/
 

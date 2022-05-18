@@ -16,7 +16,9 @@ AV.init({
     serverURL: 'https://rkuub80o.lc-cn-n1-shared.com'
 })
 const testDB = new AV.Object('test');
+const queryDB = new AV.Query('test');
 // @ts-ignore
 window.dataBase = {
-    testDB
+    testDB,
+    queryDB
 }
