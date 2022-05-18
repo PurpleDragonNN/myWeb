@@ -28,6 +28,16 @@ const router = createRouter({
                 name: '圣诞',
                 icon: 'follow'
             }
+        },
+        {
+            path: '/register',
+            name: 'register',
+            component: ()=>import('../views/entry/register.vue'),
+            meta: {
+                title: '注册',
+                name: '注册',
+                icon: 'my'
+            }
         }
     ]
 })

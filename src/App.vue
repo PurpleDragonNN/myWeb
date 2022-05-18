@@ -1,6 +1,6 @@
 <template>
   <div class="ignore-container">
-    <nut-drag direction="y" :style="{right:'0px',bottom:'70px'}">
+    <nut-drag direction="y" :style="{right:'0px',bottom:'100px'}">
       <nut-fixednav :overlay="false" un-active-text="更多页面" active-text="收起" v-model:visible="visible">
         <template v-slot:list>
           <ul class="nut-fixednav__list">
@@ -40,17 +40,12 @@ router.options.routes.forEach((item:ValueObject,index:number) => {
 let navList: any = reactive(nav)
 
 onMounted(() => {
-  let $route = useRoute()
-  console.log('route:',$router.currentRoute.value);
-  console.log('route:',$route.params);
-  console.log('route:',$route.path);
 
 })
 
 
 function goPage(item:ValueObject){
   $router.push(item.path)
-  console.log(item);
 }
 </script>
 
@@ -70,6 +65,7 @@ function goPage(item:ValueObject){
       .nav-icon{
         font-size: 20px;
         margin-bottom: 4px;
+        transform: rotate(0) !important;
       }
       &.active{
         color: #fa2c19;
