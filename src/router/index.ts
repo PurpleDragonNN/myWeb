@@ -4,10 +4,7 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            redirect: '/radius',
-            meta: {
-                title: '圆角矩形切割'
-            }
+            redirect: '/register',
         },
         {
             path: '/radius',
