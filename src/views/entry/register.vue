@@ -1,7 +1,7 @@
 <template>
     <div class="container">
 
-        <nut-form :model-value="loginForm" ref="ruleForm">
+        <nut-form :model-value="loginForm" ref="loginRef">
             <nut-form-item label="账号" prop="username" required :rules="rules.username">
                 <input class="nut-input-text" v-model="loginForm.username"
                        placeholder="请输入用户名或手机号码" type="text"/>
@@ -29,7 +29,7 @@
                 ></nut-avatar>
             </nut-uploader>
 
-            <nut-form :model-value="registerForm" ref="ruleForm" class="register-form">
+            <nut-form :model-value="registerForm" ref="registerRef" class="register-form">
                 <nut-form-item label="用户名" prop="username" required :rules="rules.username">
                     <input class="nut-input-text" v-model="registerForm.username"
                            placeholder="请输入姓名" type="text"/>
@@ -54,10 +54,13 @@
 <script setup lang="ts">
 import {ref, onMounted, reactive} from "vue";
 import {mainStore} from '../../store'
-import { createUserClass, createFileClass, createQueryClass } from "../../leancloud";
+import {createUserClass, createFileClass, createQueryClass, createObjClass} from "../../leancloud";
 import { Notify, Toast } from '@nutui/nutui';
+import AV from "leancloud-storage";
+
 const userClass = createUserClass()
 const query = createQueryClass('_User')
+const userObj = createObjClass('_User')
 
 interface ValueObject {
     [propName: string]: any
@@ -70,7 +73,8 @@ let uploadUrl = ref('my')
 // 上传图片大小上限
 let maximize = ref(1024*500)
 
-const ruleForm = ref<any>(null);
+const registerRef = ref<any>(null);
+const loginRef = ref<any>(null);
 const uploadRef = ref<any>(null);
 
 let headImgFile = reactive<any>(File)
@@ -99,7 +103,7 @@ const rules = reactive({
 
 // 注册表单提交
 const submit = () => {
-    ruleForm.value.validate().then(({ valid, errors }: any) => {
+    registerRef.value.validate().then(({ valid, errors }: any) => {
         if (valid) {
             register()
         } else {
@@ -110,8 +114,11 @@ const submit = () => {
 
 // 登录
 const login = () => {
-    ruleForm.value.validate().then(({ valid, errors }: any) => {
+    loginRef.value.validate().then(({ valid, errors }: any) => {
         if (valid) {
+            AV.User.logIn(loginForm.username,loginForm.password).then(loginUser => {
+                console.log(loginUser);
+            })
         } else {
             console.log('error submit!!', errors);
         }
@@ -121,13 +128,10 @@ const login = () => {
 // 注册
 const register = () => {
 
-
-    return
-
     userClass.setUsername(registerForm.username)
     userClass.setPassword(registerForm.password)
     userClass.setMobilePhoneNumber(registerForm.phone)
-    userClass.set('headImg',headImgFile.value.url)
+    // userClass.set('headImg',headImgFile.value.url)
     userClass.signUp().then(res => {
         console.log(res);
         Toast.success('注册成功，正在前往登录',);
@@ -158,14 +162,16 @@ const uploadFinish = ({responseText,option,fileItem}) => {
     // console.log(fileItem);
 
 }
-query.equalTo('username', 'yangzilong')
+
+/*query.equalTo('username','yangzilong')
 query.find().then(res => {
-    res[0].set('password', 3121)
+    console.log(res[0]);
+    return
+    res[0].set('password', '3121')
     res[0].save().then(r => {
         console.log(r);
     })
-    console.log(res[0]);
-})
+})*/
 
 const beforeUpload =  async (file:File[]) => {
     if (file[0].size > maximize.value) {
