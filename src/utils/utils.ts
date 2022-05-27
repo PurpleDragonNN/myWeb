@@ -1,9 +1,9 @@
-class utils {
-
-  //  图片地址
-  getImage (url: string) {
+//  图片地址
+export function getImage (url: string) {
     return new URL(url, import.meta.url).href
-  }
 }
 
-export default new utils()
+//  破解图片防盗链
+export function newImg (url: string) {
+    return `https://images.weserv.nl/?url=${url}`
+}

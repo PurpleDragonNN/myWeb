@@ -4,7 +4,7 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            redirect: '/register',
+            redirect: '/homepage',
         },
         {
             path: '/radius',
@@ -27,12 +27,12 @@ const router = createRouter({
             }
         },
         {
-            path: '/register',
-            name: 'register',
-            component: ()=>import('../views/entry/register.vue'),
+            path: '/homepage',
+            name: 'homepage',
+            component: ()=>import('../views/homepage/index.vue'),
             meta: {
-                title: '注册',
-                name: '注册',
+                title: '主页',
+                name: '主页',
                 icon: 'my'
             }
         }

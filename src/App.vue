@@ -10,6 +10,11 @@
             </li>
           </ul>
         </template>
+          <template v-slot:btn>
+              <nut-icon name="left" color="#fff"></nut-icon>
+              <nut-avatar v-if="userInfo && userInfo.headImg" size="40" :icon="newImg(userInfo.headImg.url)" shape="round"></nut-avatar>
+              <span v-else class="text">更多</span>
+          </template>
       </nut-fixednav>
     </nut-drag>
     <router-view/>
@@ -20,10 +25,17 @@
 import {ref,reactive, onMounted} from "vue";
 import { useRouter, useRoute } from 'vue-router';
 import router from './router/index'
+import {mainStore} from "@/store";
+import { storeToRefs } from "pinia";
+import { newImg } from "@/utils/utils";
+
 interface ValueObject {
   [propName:string]: any
 }
-const $router = useRouter()
+
+const store = mainStore()
+const { userInfo } = storeToRefs(store)
+const $router:Object = useRouter()
 let visible = ref(false)
 
 let nav: object[] = []
@@ -53,6 +65,10 @@ function goPage(item:ValueObject){
 *{
   box-sizing: border-box;
 }
+
+body{
+    color: #262626;
+}
 .ignore-container{
   position: relative;
   max-width: 500px;
@@ -61,7 +77,6 @@ function goPage(item:ValueObject){
   .nut-fixednav__list{
     &-item{
       font-size: 10px;
-      color: #444;
       .nav-icon{
         font-size: 20px;
         margin-bottom: 4px;
@@ -72,5 +87,24 @@ function goPage(item:ValueObject){
       }
      }
   }
+
+    .nut-fixednav__btn{
+        padding-left: 0;
+    }
 }
+.nut-dialog{
+    .nut-dialog__content{
+        max-height: 750px;
+    }
+}
+
+@media screen and (min-device-width: 500px){
+    .nut-dialog{
+        width: 500px !important;
+        .nut-dialog__content{
+            max-height: 500px;
+        }
+    }
+}
+
 </style>
