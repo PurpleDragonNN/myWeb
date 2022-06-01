@@ -46,8 +46,7 @@ interface ValueObject {
     [propName: string]: any
 }
 const store = mainStore()
-const userInfo:ValueObject = storeToRefs(store).userInfo
-// const updateInfo = reactive({})
+const { userInfo } : {userInfo: ValueObject} = storeToRefs(store)
 const actionsheetVisible = ref(false)
 
 
@@ -165,7 +164,7 @@ onMounted(() => {
         top: 30px;
     }
     .username{
-
+        margin-top: 20px;
     }
 
     .info-group{

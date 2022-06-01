@@ -275,6 +275,8 @@ const login = () => {
                 isLoading.value = false
                 logVisible.value = false
                 emit('loginCallback', loginUser)
+                loginForm.account = ''
+                loginForm.password = ''
             }).catch((error:ValueObject) => {
                 isLoading.value = false
                 showErrorTips(error)
@@ -302,6 +304,10 @@ const register = () => {
         Toast.success('注册成功，正在前往登录',);
         setTimeout(() => {
             showDialog(false)
+            registerForm.username = ''
+            registerForm.password = ''
+            registerForm.phone = ''
+            registerForm.email = ''
         },2000)
     }).catch((error:ValueObject) => {
         showErrorTips(error)
