@@ -57,7 +57,7 @@ onMounted(() => {
 
 
 function goPage(item:ValueObject){
-  $router.push(item.path)
+    ($router as any).push(item.path)
 }
 </script>
 
@@ -94,7 +94,7 @@ body{
 }
 .nut-dialog{
     .nut-dialog__content{
-        max-height: 750px;
+        max-height: 850px;
     }
 }
 

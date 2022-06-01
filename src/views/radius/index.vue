@@ -47,10 +47,6 @@ let beforeImgEl: ValueObject | null = ref(null)
 let uploaderEl: ValueObject | null = ref(null)
 
 
-
-function getImage (name: string): string {
-  return new URL(`../../assets/radius/img/${name}`, import.meta.url).href
-}
 /*onMounted(() => {
 })*/
 

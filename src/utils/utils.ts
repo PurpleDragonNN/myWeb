@@ -1,6 +1,6 @@
 //  图片地址
 export function getImage (url: string) {
-    return new URL(url, import.meta.url).href
+    // return new URL(url, import.meta.url).href
 }
 
 //  破解图片防盗链

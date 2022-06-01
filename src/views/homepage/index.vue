@@ -1,32 +1,34 @@
 <template>
-    <div>
-        <entryCom ref="entryRef" @loginCallback="loginCallback"></entryCom>
-        <div class="container" v-if="userInfo">
-            <i @click="logout" class="iconfont icon-Logout"></i>
-            <nut-avatar size="60" :icon="userInfo.headImg ? newImg(userInfo.headImg.url) : 'my'" shape="square"></nut-avatar>
-            <p>{{userInfo.username}} <nut-icon name="edit" @click="updatePassword"></nut-icon></p>
-            <nut-cell-group class="info-group">
-                <nut-cell>
-                    <i class="iconfont icon-phone"></i>
-                    <nut-input @blur="updateInfo('phone')" :border="false" v-if="inputVisible.phone" placeholder="请输入手机号码" v-model="userInfo.mobilePhoneNumber" />
-                    <span v-else>{{userInfo.mobilePhoneNumber}}</span>
-                    <nut-icon name="edit" @click="inputVisible.phone=true"></nut-icon>
-                </nut-cell>
-                <nut-cell>
-                    <i class="iconfont icon-email"></i>
-                    <nut-input :border="false" v-if="inputVisible.email" placeholder="请输入邮箱地址" v-model="userInfo.email" />
-                    <span v-else>{{userInfo.email}}</span>
-                </nut-cell>
+    <entryCom ref="entryRef" @loginCallback="loginCallback"></entryCom>
+    <div class="container" v-if="userInfo">
+        <i @click="actionsheetVisible=true" class="iconfont icon-setting"></i>
+        <nut-avatar size="60" :icon="userInfo.headImg ? newImg(userInfo.headImg.url) : 'my'" shape="square"></nut-avatar>
+        <span class="username">{{userInfo.username}}</span>
+        <nut-cell-group class="info-group">
+            <nut-cell v-if="userInfo.mobilePhoneNumber">
+                <i class="iconfont icon-phone"></i>
+                <span>{{userInfo.mobilePhoneNumber}}</span>
 
-            </nut-cell-group>
-        </div>
-        <nut-empty v-else image="empty" description="未登录">
-            <div style="margin-top: 10px">
-                <nut-button type="primary" @click="showLoginDialog"><i class="iconfont icon-login"></i> 登录</nut-button>
-            </div>
-        </nut-empty>
-
+            </nut-cell>
+            <nut-cell v-if="userInfo.email">
+                <i class="iconfont icon-email"></i>
+                <span>{{userInfo.email}}</span>
+            </nut-cell>
+            <br>
+        </nut-cell-group>
     </div>
+    <nut-empty v-else image="empty" description="未登录">
+        <div style="margin-top: 10px">
+            <nut-button type="primary" @click="showLoginDialog"><i class="iconfont icon-login"></i> 登录</nut-button>
+        </div>
+    </nut-empty>
+
+    <nut-actionsheet
+        v-model:visible="actionsheetVisible"
+        :menu-items="menuItems"
+        @choose="chooseItem"
+    >
+    </nut-actionsheet>
 
 </template>
 
@@ -40,69 +42,98 @@ import {mainStore} from "@/store";
 import { storeToRefs } from "pinia";
 import { newImg } from "@/utils/utils";
 
+interface ValueObject {
+    [propName: string]: any
+}
 const store = mainStore()
-const { userInfo } = storeToRefs(store)
+const userInfo:ValueObject = storeToRefs(store).userInfo
+// const updateInfo = reactive({})
+const actionsheetVisible = ref(false)
 
-const inputVisible = reactive({
-    phone: true,
-    email: false,
-})
+
 const entryRef = ref<any>(null);
 
-const userClass = AV.User.current() || new AV.User()
+const userClass:ValueObject = AV.User.current() || new AV.User()
+
+const password = reactive({
+    new: '',
+    old: ''
+})
 
 watch(userInfo, async val => {
-    if (!val) {
+    if (val) {
+    } else {
         await nextTick()
         showLoginDialog()
     }
+
 }, {immediate: true, deep: true})
 
-// 显示登录弹窗
-const showLoginDialog = () => {
-    entryRef.value.logVisible = true
-}
+
 // 注销登录
 const logout = () => {
-    Dialog({
+    (<any>Dialog)(<any>{
         content: '确认退出当前登录？',
         onOk: () => {
-            AV.User.logOut().then(res => {
+            AV.User.logOut().then(() => {
                 store.fetchUserInfo()
             })
         },
     });
 }
-// 登录成功回调
-const loginCallback = (info) => {
-    store.fetchUserInfo()
-}
 // 设置选项
-const menuChoose = (val) => {
-    console.log(val);
+const chooseItem = (item:ValueObject ) => {
+    item.event()
+    actionsheetVisible.value = false
+}
 
+const menuItems = [
+    {
+        name: '修改个人信息',
+        event: () => {
+            entryRef.value.updateVisible = true
+        }
+    },
+    {
+        name: '修改密码',
+        event: () => {
+            entryRef.value.updatePWVisible = true
+        }
+    },
+    {
+        name: '注销登录',
+        event: logout
+    }
+];
+// 显示登录弹窗
+const showLoginDialog = () => {
+    entryRef.value.logVisible = true
+}
+// 登录成功回调
+const loginCallback = () => {
+    store.fetchUserInfo()
 }
 
 // 更新信息
-const updateInfo = (infoItem) => {
-    const obj = {
-        username: () => userClass.setUsername(updateForm.username),
-        phone: () => userClass.setMobilePhoneNumber(registerForm.phone),
-        email: () => userClass.setEmail(registerForm.email)
-    }
-    obj[infoItem]()
-    userClass.save().then(res => {
-        store.fetchUserInfo()
-    })
-    return
-    if (updateForm.password) {
-        userClass.updatePassword('12345678',updateForm.password,{
+const updateInfo = () => {
+    (<any>Dialog)(<any>{
+        content: '确认保存当前修改？',
+        onOk: () => {
+            userClass.setUsername(userInfo.username)
+            userClass.setMobilePhoneNumber(userInfo.phone)
+            userClass.setEmail(userInfo.email)
+            userClass.save().then(() => {
+                store.fetchUserInfo()
+            })
+        },
+    });
+    if (password.new && password.old) {
+        userClass.updatePassword(password.old,password.new,{
             sessionToken: userClass.getSessionToken(),
             // user: userClass,
             useMasterKey: true
-        }).then(res => {
+        }).then(() => {
             store.fetchUserInfo()
-            console.log(res);
         })
     }
 }
@@ -127,11 +158,14 @@ onMounted(() => {
     font-size: 34px;
     color: #333;
 
-    .icon-Logout{
+    .icon-setting{
         font-size: 40px;
         position: absolute;
         right: 30px;
         top: 30px;
+    }
+    .username{
+
     }
 
     .info-group{

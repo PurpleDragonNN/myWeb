@@ -29,8 +29,9 @@
             :no-footer="true"
             closeOnClickOverlay
             v-model:visible="regVisible"
+            class="info-dialog"
         >
-            <nut-uploader ref="uploadRef" :file-list="defaultFileList" :before-upload="beforeUpload" accept="image/*" :auto-upload="false" :maximize="maximize"></nut-uploader>
+            <nut-uploader :file-list="defaultFileList" :before-upload="beforeUpload" accept="image/*" :auto-upload="false" :maximize="maximize"></nut-uploader>
 
             <nut-form :model-value="registerForm" ref="registerRef" class="register-form">
                 <nut-form-item label="用户名" label-width="70px" prop="username" required :rules="rules.username">
@@ -41,7 +42,7 @@
                     <input class="nut-input-text" v-model="registerForm.password"
                            placeholder="请输入密码" type="password"/>
                 </nut-form-item>
-                <nut-form-item label="手机号码" label-width="70px" prop="phone" required :rules="rules.phone">
+                <nut-form-item label="手机号码" label-width="70px" prop="phone" :rules="rules.phone">
                     <input class="nut-input-text" v-model="registerForm.phone" placeholder="请输入手机号码" type="text"/>
                 </nut-form-item>
                 <nut-form-item label="邮箱" label-width="40px" prop="email" :rules="rules.email">
@@ -62,30 +63,53 @@
             :no-footer="true"
             closeOnClickOverlay
             v-model:visible="updateVisible"
+            class="info-dialog"
         >
-            <nut-uploader ref="uploadRef" :file-list="defaultFileList" :before-upload="beforeUpload" accept="image/*" :auto-upload="false" :maximize="maximize"></nut-uploader>
+            <nut-uploader :file-list="updateFileList" :before-upload="beforeUpload" accept="image/*" :auto-upload="false" :maximize="maximize"></nut-uploader>
 
             <nut-form :model-value="updateForm" ref="updateRef" class="register-form">
                 <nut-form-item label="用户名" label-width="70px" prop="username" required :rules="rules.username">
                     <input class="nut-input-text" v-model="updateForm.username"
                            placeholder="请输入姓名" type="text"/>
                 </nut-form-item>
-                <nut-form-item label="手机号码" label-width="70px" prop="phone" required :rules="rules.phone">
+                <nut-form-item label="手机号码" label-width="70px" prop="phone" :rules="rules.phone">
                     <input class="nut-input-text" v-model="updateForm.phone" placeholder="请输入手机号码" type="text"/>
                 </nut-form-item>
                 <nut-form-item label="邮箱" label-width="40px" prop="email" :rules="rules.email">
                     <input class="nut-input-text" v-model="updateForm.email" placeholder="请输入邮箱" type="email"/>
                 </nut-form-item>
-
-                <nut-form-item label="旧密码" label-width="70px" prop="password" required :rules="rules.password">
-                    <input class="nut-input-text" v-model="updateForm.password"
-                           placeholder="请输入密码" type="password"/>
-                </nut-form-item>
                 <nut-cell>
-                    <nut-button block class="register-btn" type="primary" @click="updateInfo">更新</nut-button>
+                    <nut-button :loading="isLoading" block class="register-btn" type="primary" @click="updateInfo">修改信息</nut-button>
                 </nut-cell>
             </nut-form>
 
+        </nut-dialog>
+
+        <!--更新密码弹窗-->
+        <nut-dialog
+            :no-footer="true"
+            closeOnClickOverlay
+            v-model:visible="updatePWVisible"
+        >
+            <nut-form :model-value="updateForm" ref="updatePWRef">
+                <nut-form-item label="旧密码" label-width="80px" prop="oldPassword" required :rules="rules.password">
+                    <input class="nut-input-text" v-model="updateForm.oldPassword"
+                           placeholder="请输入密码" type="password"/>
+                </nut-form-item>
+
+                <nut-form-item label="新密码" label-width="80px" prop="newPassword" required :rules="rules.password">
+                    <input class="nut-input-text" v-model="updateForm.newPassword"
+                           placeholder="请输入密码" type="password"/>
+                </nut-form-item>
+
+                <nut-form-item label="确认密码" label-width="80px" prop="repeatPassword" required :rules="rules.repeatPassword">
+                    <input class="nut-input-text" v-model="updateForm.repeatPassword"
+                           placeholder="请再次输入密码" type="password"/>
+                </nut-form-item>
+                <nut-cell>
+                    <nut-button :loading="isLoading" block class="register-btn" type="primary" @click="updatePassword">修改密码</nut-button>
+                </nut-cell>
+            </nut-form>
         </nut-dialog>
     </div>
 
@@ -94,7 +118,7 @@
 <script setup lang="ts">
 import {ref, onMounted, reactive, watch, defineEmits} from "vue";
 import { createFileClass, createQueryClass} from "@/leancloud";
-import { Notify, Toast } from '@nutui/nutui';
+import {Dialog, Notify, Toast} from '@nutui/nutui';
 import AV from "leancloud-storage";
 import {mainStore} from "@/store";
 import { storeToRefs } from "pinia";
@@ -110,13 +134,13 @@ const emit = defineEmits<{
 
 }>()
 
-const newUserClass = new AV.User()
-const userClass = AV.User.current() || new AV.User()
+const newUserClass:ValueObject = new AV.User()
+const userClass:ValueObject = AV.User.current() || new AV.User()
 const query = createQueryClass('_User')
 
-const CODE_TIPS = {
+const CODE_TIPS:object = {
     202: '该用户名已被注册',
-    210: '手机号码或密码错误',
+    210: '账号或密码错误',
     211: '该用户不存在',
     214: '该号码已被注册',
 }
@@ -126,44 +150,50 @@ let isLoading = ref(false)
 let regVisible = ref(false)
 let logVisible = ref(false)
 let updateVisible = ref(false)
+let updatePWVisible = ref(false)
 
 let defaultFileList:any = ref([])
+let updateFileList:any = ref([])
 
 // 上传图片大小上限
 let maximize = ref(1024*500)
 
 const registerRef = ref<any>(null);
 const loginRef = ref<any>(null);
-const uploadRef = ref<any>(null);
 const updateRef = ref<any>(null);
+const updatePWRef = ref<any>(null);
 
-let headImgFile = ref<any>(File)
+let headImgFile = ref<any>(null)
+let updateHeadImgFile = ref<any>(null)
+
 const loginForm = reactive({
-    account: '576817275@qq.com',
-    password: '123456789',
+    account: '杨紫龙',
+    password: '123456',
 });
 const registerForm = reactive({
-    username: 'yangzilong',
-    password: '12345678',
-    phone: '18578655522',
-    email: '576817275@qq.com'
-});
-const updateForm = reactive({
     username: '',
     password: '',
     phone: '',
     email: ''
 });
+const updateForm = reactive({
+    username: '',
+    oldPassword: '',
+    newPassword: '',
+    repeatPassword: '',
+    phone: '',
+    email: ''
+});
 
 
-const showErrorTips = error => {
+const showErrorTips = (error: ValueObject) => {
     if (CODE_TIPS[error.code]) {
         Notify.danger(CODE_TIPS[error.code])
     } else {
         Notify.danger(error.rawMessage)
     }
 }
-const showDialog = (isShow) => {
+const showDialog = (isShow:boolean) => {
     regVisible.value = isShow
     logVisible.value = !isShow
 }
@@ -173,31 +203,58 @@ const rules = reactive({
     username: [{ required: true, message: '请输入用户名' }],
     account: [{ required: true, message: '请输入用户名或邮箱' }],
     password: [{ required: true, message: '请输入密码' }],
+    repeatPassword: [{ required: true, message: '请再次输入密码' },
+        {
+            validator: (val:string) => updateForm.newPassword === updateForm.repeatPassword,
+            message: '两次输入的密码不一致'
+        }],
     email: [{ required: false, message: '请输入邮箱' },
         {
-            validator: (val:string) => /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/.test(val),
+            validator: (val:string) => !val || /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/.test(val),
             message: '邮箱格式不正确'
         }],
     phone: [
-        { required: true, message: '请输入联系电话' },
         {
-            validator: (val:string) => /^1(3[0-9]|4[01456879]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[0-35-9])\d{8}$/.test(val),
+            validator: (val:string) => !val || /^1(3[0-9]|4[01456879]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[0-35-9])\d{8}$/.test(val),
             message: '手机号码格式不正确'
         }
     ]
 })
 
-watch(() =>defaultFileList.value.length, () => {
-    defaultFileList.value[0].status = 'success'
+watch(defaultFileList, val => {
+    if (val.length) {
+        val[0].status = 'success'
+    } else {
+        headImgFile.value = null
+    }
+},{deep:true})
+
+watch(updateFileList, val => {
+    console.log(val);
+    if (val.length) {
+        val[0].status = 'success'
+    } else {
+        updateHeadImgFile.value = null
+    }
 },{deep:true})
 
 watch(userInfo, val => {
+    console.log('en:',userInfo);
     if (val) {
-        updateForm.username = userInfo.value.username
-        updateForm.phone = userInfo.value.mobilePhoneNumber
-        updateForm.email = userInfo.value.email
+        updateForm.username = val.username
+        updateForm.phone = val.mobilePhoneNumber
+        updateForm.email = val.email
+        if (val.headImg) {
+            updateHeadImgFile.value = val.headImg
+            updateFileList.value[0] = {
+                ...val.headImg,
+                status: 'success',
+                type: 'image',
+                message: '成功'
+            }
+        }
     }
-})
+},{immediate: true,deep: true})
 
 // 注册表单提交
 const submit = () => {
@@ -218,7 +275,7 @@ const login = () => {
                 isLoading.value = false
                 logVisible.value = false
                 emit('loginCallback', loginUser)
-            }).catch(error => {
+            }).catch((error:ValueObject) => {
                 isLoading.value = false
                 showErrorTips(error)
             })
@@ -233,40 +290,94 @@ const register = () => {
     newUserClass.setUsername(registerForm.username)
     newUserClass.setPassword(registerForm.password)
     newUserClass.setMobilePhoneNumber(registerForm.phone)
-    newUserClass.setEmail(registerForm.email)
+    if (registerForm.email) {
+        newUserClass.setEmail(registerForm.email)
+    }
     if (headImgFile.value) {
         newUserClass.set('headImg',new AV.File(headImgFile.value.name, headImgFile.value))
     }
     isLoading.value = true
-    newUserClass.signUp().then(res => {
+    newUserClass.signUp().then(() => {
         isLoading.value = false
         Toast.success('注册成功，正在前往登录',);
         setTimeout(() => {
             showDialog(false)
         },2000)
-    }).catch(error => {
+    }).catch((error:ValueObject) => {
         showErrorTips(error)
     })
 }
 
 // 更新信息
 const updateInfo = () => {
-    userClass.setUsername(updateForm.username)
-    userClass.setMobilePhoneNumber(registerForm.phone)
-    userClass.setEmail(registerForm.email)
-    userClass.save().then(res => {
-        store.fetchUserInfo()
-    })
-    if (updateForm.password) {
-        userClass.updatePassword('12345678',updateForm.password,{
-            sessionToken: userClass.getSessionToken(),
-            // user: userClass,
-            useMasterKey: true
-        }).then(res => {
-            store.fetchUserInfo()
-            console.log(res);
-        })
-    }
+    updateRef.value.validate().then(({ valid, errors }: any) => {
+        if (valid) {
+            (<any>Dialog)(<any>{
+                content: '确认修改信息？',
+                onOk: () => {
+                    userClass.setUsername(updateForm.username)
+                    userClass.setMobilePhoneNumber(updateForm.phone)
+                    if (updateForm.email) {
+                        userClass.setEmail(updateForm.email)
+                    }
+                    let type = Object.prototype.toString.call(updateHeadImgFile.value)
+                    if (type === '[object File]') {
+                        userClass.set('headImg',new AV.File(updateHeadImgFile.value.name, updateHeadImgFile.value))
+                    } else if (type === '[object Null]') {
+                        userClass.unset('headImg')
+                    }
+                    isLoading.value = true
+                    console.log(userClass);
+                    userClass.save().then(() => {
+                        isLoading.value = false
+                        store.fetchUserInfo()
+                        updateVisible.value = false
+                        Notify.success('修改成功');
+                    }).catch((error:ValueObject) => {
+                        isLoading.value = false
+                        showErrorTips(error)
+                    })
+                },
+            });
+        } else {
+            console.log('error submit!!', errors);
+        }
+    });
+}
+// 更新密码
+const updatePassword = () => {
+    updatePWRef.value.validate().then(({ valid, errors }: any) => {
+        if (valid) {
+            (<any>Dialog)(<any>{
+                content: '修改密码后需要重新登录，确认修改？',
+                onOk: () => {
+                    isLoading.value = true
+                    userClass.updatePassword(updateForm.oldPassword,updateForm.newPassword,{
+                        sessionToken: userClass.getSessionToken(),
+                        user: userClass,
+                        useMasterKey: true
+                    }).then(() => {
+                        isLoading.value = false
+                        Notify.success('修改密码成功，请重新登录');
+                        updatePWVisible.value = false
+                        AV.User.logOut().then(res => {
+                            store.fetchUserInfo()
+                        })
+                    }).catch((error:ValueObject) => {
+                        isLoading.value = false
+                        if (error.code === 210) {
+                            Notify.danger('旧密码错误')
+                        } else {
+                            showErrorTips(error)
+                        }
+
+                    })
+                },
+            });
+        } else {
+            console.log('error submit!!', errors);
+        }
+    });
 }
 
 const beforeUpload =  async (file:File[]) => {
@@ -274,16 +385,17 @@ const beforeUpload =  async (file:File[]) => {
         Notify.danger(`图片大小不能超过${maximize.value/1024}kb！`);
         return file
     }
-
+    let currentImg = updateVisible ? updateHeadImgFile : headImgFile
     // 大于一百k则压缩图片
     if (file[0].size > 1024 * 100) {
         compress(file).then(res => {
-            headImgFile.value = res[0]
+            currentImg.value = res[0]
             console.log('compress:',res);
             return res
         })
     }
-    headImgFile.value = file[0]
+    currentImg.value = file[0]
+    console.log(currentImg.value);
     return [file[0]]
 }
 
@@ -327,6 +439,7 @@ defineExpose({
     logVisible,
     regVisible,
     updateVisible,
+    updatePWVisible,
 })
 
 </script>
@@ -355,7 +468,7 @@ defineExpose({
     left: 50%;
     top: 40px;
     transform: translateX(-50%);
-    ::v-deep .picture{
+    ::v-deep(.picture){
         width: 100%;
         height: 100%;
         margin: auto;
@@ -374,6 +487,10 @@ defineExpose({
     .register-btn{
         margin: 0 auto;
     }
+}
+
+.editable-switch{
+    text-align: left;
 }
 
 @media screen and (min-device-width: 500px){
