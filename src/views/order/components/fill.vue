@@ -119,8 +119,6 @@ const blur = () => {
         formData.fanli = 0
     }
 }
-const formatNaN = (val) => {
-}
 
 const submit = () => {
 
