@@ -1,4 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router";
+import { Toast } from '@nutui/nutui';
+import AV from "leancloud-storage";
 const router = createRouter({
     history: createWebHashHistory(),
     routes: [
@@ -33,7 +35,8 @@ const router = createRouter({
             meta: {
                 title: '刷单填单',
                 name: '填单',
-                icon: 'follow'
+                icon: 'edit',
+                needLogin: true
             },
         },
         {
@@ -55,6 +58,12 @@ interface ValueObject {
 router.beforeEach((to:ValueObject,from:ValueObject,next:any) => {
     let dom:any = window.document
     dom.title = to.meta.title
+    if (to.meta.needLogin && !AV.User.current()) {
+        if (from.path !== '/') {
+            Toast.warn('没登录你想干啥？');
+        }
+        router.push('homepage')
+    }
     next()
 })
 

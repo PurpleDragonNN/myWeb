@@ -14,7 +14,6 @@
 
 <script setup lang="ts">
 import {ref, onMounted, reactive } from "vue";
-import dayjs from "dayjs";
 import fillCom from './components/fill.vue'
 import listCom from './components/list.vue'
 
@@ -24,7 +23,6 @@ interface ValueObject {
 let currentTab = ref(1)
 
 function tabSwitch(item:ValueObject, index:number) {
-    console.log(index);
     currentTab.value = index
 }
 

@@ -28,17 +28,17 @@
         </nut-form-item>
 
         <nut-form-item label="返单金额" required prop="earn" :rules="rules.earn">
-            <nut-inputnumber v-model="formData.earn" min="0" step="1" decimal-places="2"  input-width="60" button-size="28" />
+            <nut-inputnumber v-model="formData.earn" @blur="blur" min="0" step="1" decimal-places="2"  input-width="60" button-size="28" />
         </nut-form-item>
         <nut-form-item label="实付金额" required prop="payment" :rules="rules.payment">
-            <nut-inputnumber v-model="formData.payment" min="0" step="1" decimal-places="2" input-width="60" button-size="28"  />
+            <nut-inputnumber v-model="formData.payment" @blur="blur" min="0" step="1" decimal-places="2" input-width="60" button-size="28"  />
         </nut-form-item>
         <nut-form-item label="返利金额" prop="fanli" :rules="rules.fanli">
-            <nut-inputnumber v-model="formData.fanli" min="0" step="1" decimal-places="2"  input-width="60" button-size="28" />
+            <nut-inputnumber v-model="formData.fanli" @blur="blur" min="0" step="1" decimal-places="2"  input-width="60" button-size="28" />
         </nut-form-item>
         <nut-cell title="预计盈利">
-            <span v-if="formData.earn&&formData.payment">{{`${formData.earn} + ${formData.fanli} - ${formData.payment} = `}}</span>
-            <nut-price :price="Number(formData.earn)-Number(formData.payment)+Number(formData.fanli)" size="large" :need-symbol="false" :thousands="true" />
+            <span v-if="!isNaN(totalEarn) && totalEarn">{{`${Number(formData.earn)} + ${Number(formData.fanli)} - ${Number(formData.payment)} = `}}</span>
+            <nut-price :price="totalEarn" size="large" :need-symbol="false" :thousands="true" />
         </nut-cell>
         <nut-cell>
             <nut-button class="submit-btn" type="primary" block @click="submit">提交</nut-button>
@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, reactive } from "vue";
+import {ref, onMounted, reactive, computed } from "vue";
 import { createFileClass, createQueryClass, createObjClass} from "@/leancloud";
 import {mainStore} from "@/store";
 import { storeToRefs } from "pinia";
@@ -74,8 +74,8 @@ let formData = reactive({
     count: 1,
     date: dayjs().format('YYYY-MM-DD'),
     product: '',
-    payment: null,
-    earn: null,
+    payment: <any>null,
+    earn: <any>null,
     fanli: 0.00
 });
 
@@ -87,7 +87,6 @@ const closeSwitch = (param:string) => {
     dateVisible.value = false;
 };
 const setChooseValue = (param:string) => {
-    console.log(param);
     formData.date= param[3];
 };
 // 表单校验
@@ -103,6 +102,25 @@ const rules = reactive({
         }
     ]
 })
+
+let totalEarn = computed(() => {
+    let res = Number(formData.earn)-Number(formData.payment)+Number(formData.fanli)
+    return isNaN(res) ? 0 : res
+})
+
+const blur = () => {
+    if (isNaN(formData.earn)) {
+        formData.earn = null
+    }
+    if (isNaN(formData.payment)) {
+        formData.payment = null
+    }
+    if (isNaN(formData.fanli)) {
+        formData.fanli = 0
+    }
+}
+const formatNaN = (val) => {
+}
 
 const submit = () => {
 

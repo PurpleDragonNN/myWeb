@@ -13,7 +13,7 @@
                            placeholder="请输入用户名或邮箱" type="text"/>
                 </nut-form-item>
                 <nut-form-item label="密码" label-width="60px" prop="password" required :rules="rules.password">
-                    <input class="nut-input-text" v-model="loginForm.password"
+                    <input class="nut-input-text" v-model="loginForm.password"  @keydown.enter="login"
                            placeholder="请输入密码" type="password"/>
                 </nut-form-item>
                 <nut-cell>
@@ -230,7 +230,6 @@ watch(defaultFileList, val => {
 },{deep:true})
 
 watch(updateFileList, val => {
-    console.log(val);
     if (val.length) {
         val[0].status = 'success'
     } else {
@@ -239,7 +238,6 @@ watch(updateFileList, val => {
 },{deep:true})
 
 watch(userInfo, val => {
-    console.log('en:',userInfo);
     if (val) {
         updateForm.username = val.username
         updateForm.phone = val.mobilePhoneNumber
@@ -333,7 +331,6 @@ const updateInfo = () => {
                         userClass.unset('headImg')
                     }
                     isLoading.value = true
-                    console.log(userClass);
                     userClass.save().then(() => {
                         isLoading.value = false
                         store.fetchUserInfo()
@@ -396,12 +393,10 @@ const beforeUpload =  async (file:File[]) => {
     if (file[0].size > 1024 * 100) {
         compress(file).then(res => {
             currentImg.value = res[0]
-            console.log('compress:',res);
             return res
         })
     }
     currentImg.value = file[0]
-    console.log(currentImg.value);
     return [file[0]]
 }
 
