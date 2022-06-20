@@ -27,6 +27,16 @@ const router = createRouter({
             }
         },
         {
+            path: '/order',
+            name: 'order',
+            component: ()=>import('../views/order/index.vue'),
+            meta: {
+                title: '刷单填单',
+                name: '填单',
+                icon: 'follow'
+            },
+        },
+        {
             path: '/homepage',
             name: 'homepage',
             component: ()=>import('../views/homepage/index.vue'),
