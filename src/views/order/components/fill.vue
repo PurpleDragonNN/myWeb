@@ -177,22 +177,5 @@ const resetForm = () => {
 
 
 <style lang="scss" scoped>
-.container{
-    padding: 50px 20px 0;
-    width: 100%;
-    height: 100vh;
-    overflow: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-sizing: border-box;
-    font-size: 34px;
-    color: #333;
-
-    .submit-btn{
-        margin-top: 20px;
-    }
-}
-
 
 </style>

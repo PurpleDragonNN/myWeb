@@ -13,16 +13,16 @@
                 @refresh="refresh"
             >
 
-                <nut-swipe v-for="row of table.listData" :key="row.objectId" :disabled="props.tabNum!==0">
+                <nut-swipe v-for="row of table.listData" :key="row.objectId">
                     <li class="list-row">
                         <div class="row-item" v-for="headItem of table.tableHead" :class="{[`${headItem.class}`]: headItem.class}">
                             {{row[headItem.key]}}
                         </div>
                     </li>
-                    <template #left>
+                    <template #left v-if="props.tabNum !==0">
                         <nut-button class="swipe-btn swipe-btn-del" shape="square" @click="delOrder(row)" type="danger">删除</nut-button>
                     </template>
-                    <template #right>
+                    <template #right v-if="props.tabNum===0">
                         <nut-button class="swipe-btn" shape="square" type="success" @click="changeStatus(row)">完成</nut-button>
                     </template>
                 </nut-swipe>
@@ -206,8 +206,7 @@ $border-color: #ececec;
     .table-head{
         flex: none;
         background-color: #f3f3f3;
-        border: 1px solid $border-color;
-        border-bottom: none;
+        border-top: 1px solid $border-color;
     }
     .table-body{
         flex: auto;
