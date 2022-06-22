@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-      <fillCom class="main" v-show="currentTab===0"></fillCom>
+      <fillCom class="main" v-show="currentTab===0" @submitOrderCb="submitOrderCb"></fillCom>
       <listCom class="main" v-if="initList" v-show="currentTab===1"></listCom>
       <nut-tabbar @tab-switch="tabSwitch" v-model:visible="currentTab">
           <nut-tabbar-item tab-title="填单" icon="home"></nut-tabbar-item>
@@ -19,14 +19,19 @@ import listCom from './components/list.vue'
 interface ValueObject {
   [propName:string]: any
 }
-let currentTab = ref(1)
-let initList = ref(true)
+let currentTab = ref(0)
+let initList = ref(false)
 
 function tabSwitch(item:ValueObject, index:number) {
     if (index === 1) {
         initList.value = true
     }
     currentTab.value = index
+}
+
+// 提交后将列表页状态改为未初始化，以便刷新数据
+function submitOrderCb() {
+    initList.value = false
 }
 
 </script>
@@ -46,7 +51,7 @@ function tabSwitch(item:ValueObject, index:number) {
   color: #333;
 
     .main{
-        flex: 1;
+        flex: auto;
         overflow: hidden;
     }
     .nut-tabbar{

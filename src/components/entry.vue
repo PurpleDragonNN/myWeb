@@ -289,7 +289,9 @@ const login = () => {
 const register = () => {
     newUserClass.setUsername(registerForm.username)
     newUserClass.setPassword(registerForm.password)
-    newUserClass.setMobilePhoneNumber(registerForm.phone)
+    if (registerForm.phone) {
+        newUserClass.setMobilePhoneNumber(registerForm.phone)
+    }
     if (registerForm.email) {
         newUserClass.setEmail(registerForm.email)
     }
@@ -308,6 +310,7 @@ const register = () => {
             registerForm.email = ''
         },2000)
     }).catch((error:ValueObject) => {
+        isLoading.value = false
         showErrorTips(error)
     })
 }

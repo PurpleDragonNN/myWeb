@@ -48,15 +48,18 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, reactive, computed, watch } from "vue";
+import {ref, onMounted, reactive, computed, watch, defineEmits} from "vue";
 import { createFileClass, createQueryClass, createObjClass} from "@/leancloud";
 import {mainStore} from "@/store";
 import { storeToRefs } from "pinia";
 import dayjs from "dayjs";
-import {Notify} from "@nutui/nutui";
+import {Notify, Toast} from "@nutui/nutui";
 interface ValueObject {
     [propName:string]: any
 }
+const emit = defineEmits<{
+    (e: 'submitOrderCb'): void,
+}>()
 
 const store = mainStore()
 const { userInfo } = storeToRefs(store)
@@ -84,7 +87,7 @@ watch(() => formData.product,val => {
     let reg = val.match(/\/[0-9]*返/)
     if (reg && reg[0].match(/[0-9]+/)) {
         // @ts-ignore
-        formData.payment = Number(reg[0].match(/[0-9]+/)[0])
+        formData.receive = Number(reg[0].match(/[0-9]+/)[0])
     }
 })
 
@@ -151,9 +154,12 @@ const save = () => {
     orderClass.set('isFinish', false)
     orderClass.set('username', userInfo.value.username)
     orderClass.set('userObjectId', userInfo.value.objectId)
+    Toast.loading('loading');
     orderClass.save().then(res => {
+        Toast.hide();
         Notify.success('提交成功');
         resetForm()
+        emit('submitOrderCb')
     });
 }
 

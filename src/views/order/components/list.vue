@@ -49,7 +49,7 @@ const changeStatusCb = () => {
     width: 100%;
     :deep(.nut-tabs__content){
         height: calc(100% - 2.3rem);
-        //flex: 1;
+        //flex: auto;
         //height: 100%;
     }
     .nut-tabpane{

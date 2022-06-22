@@ -1,9 +1,9 @@
 <template>
     <ul class="table-container">
-        <div class="list-row table-head">
+        <div v-if="table.listData && table.listData.length" class="list-row table-head">
             <div class="row-item" v-for="headItem of table.tableHead">{{headItem.title}}</div>
         </div>
-        <div class="table-body" :id="`customScroll${props.tabNum}`">
+        <div v-if="table.listData && table.listData.length" class="table-body" :id="`customScroll${props.tabNum}`">
             <nut-infiniteloading
                 :use-window='false'
                 :container-id="`customScroll${props.tabNum}`"
@@ -25,6 +25,7 @@
                 </nut-swipe>
             </nut-infiniteloading>
         </div>
+        <nut-empty v-else description="暂无订单"></nut-empty>
     </ul>
 </template>
 
@@ -170,6 +171,9 @@ const formatNumber = (num1:number, num2:number) => {
     return (num1+num2)/100
 }
 
+defineExpose({
+})
+
 </script>
 
 
@@ -182,19 +186,21 @@ $border-color: #ececec;
     padding: 0;
     width: 100%;
     height: 100%;
-    border-left: 1px solid $border-color;
-    border-top: 1px solid $border-color;
+
     font-size: 26px;
     .table-head{
         flex: none;
         background-color: #f3f3f3;
+        border: 1px solid $border-color;
+        border-bottom: none;
     }
     .table-body{
-        flex: 1;
+        flex: auto;
         width: 100%;
         overflow: auto;
         overflow-x: hidden;
-
+        border-left: 1px solid $border-color;
+        border-top: 1px solid $border-color;
     }
 
     .list-row{
