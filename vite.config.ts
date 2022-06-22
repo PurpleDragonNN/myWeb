@@ -8,6 +8,7 @@ export default defineConfig({
     base: './',
 	build: {
         outDir: './docs',
+        chunkSizeWarningLimit: 1000
 	},
     resolve: {
         alias: [{ find: '@', replacement: resolve(__dirname, 'src') }]

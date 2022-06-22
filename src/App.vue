@@ -1,6 +1,6 @@
 <template>
   <div class="ignore-container">
-    <nut-drag direction="y" :style="{right:'0px',bottom:'100px'}">
+    <nut-drag direction="y" :style="{right:'0px',bottom:'150px'}">
       <nut-fixednav :overlay="false" un-active-text="更多页面" active-text="收起" v-model:visible="visible">
         <template v-slot:list>
           <ul class="nut-fixednav__list">

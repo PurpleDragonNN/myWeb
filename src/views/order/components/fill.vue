@@ -27,8 +27,8 @@
             <input class="nut-input-text" placeholder="请输入商品名称" type="text" v-model="formData.product" />
         </nut-form-item>
 
-        <nut-form-item label="返单金额" required prop="earn" :rules="rules.earn">
-            <nut-inputnumber v-model="formData.earn" @blur="blur" min="0" step="1" decimal-places="2"  input-width="60" button-size="28" />
+        <nut-form-item label="返单金额" required prop="receive" :rules="rules.receive">
+            <nut-inputnumber v-model="formData.receive" @blur="blur" min="0" step="1" decimal-places="2"  input-width="60" button-size="28" />
         </nut-form-item>
         <nut-form-item label="实付金额" required prop="payment" :rules="rules.payment">
             <nut-inputnumber v-model="formData.payment" @blur="blur" min="0" step="1" decimal-places="2" input-width="60" button-size="28"  />
@@ -37,7 +37,7 @@
             <nut-inputnumber v-model="formData.fanli" @blur="blur" min="0" step="1" decimal-places="2"  input-width="60" button-size="28" />
         </nut-form-item>
         <nut-cell title="预计盈利">
-            <span v-if="!isNaN(totalEarn) && totalEarn">{{`${Number(formData.earn)} + ${Number(formData.fanli)} - ${Number(formData.payment)} = `}}</span>
+            <span v-if="!isNaN(totalEarn) && totalEarn">{{`${Number(formData.receive)} + ${Number(formData.fanli)} - ${Number(formData.payment)} = `}}</span>
             <nut-price :price="totalEarn" size="large" :need-symbol="false" :thousands="true" />
         </nut-cell>
         <nut-cell>
@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, reactive, computed } from "vue";
+import {ref, onMounted, reactive, computed, watch } from "vue";
 import { createFileClass, createQueryClass, createObjClass} from "@/leancloud";
 import {mainStore} from "@/store";
 import { storeToRefs } from "pinia";
@@ -75,9 +75,18 @@ let formData = reactive({
     date: dayjs().format('YYYY-MM-DD'),
     product: '',
     payment: <any>null,
-    earn: <any>null,
+    receive: <any>null,
     fanli: 0.00
 });
+
+watch(() => formData.product,val => {
+    // 提取标题中的返单金额
+    let reg = val.match(/\/[0-9]*返/)
+    if (reg && reg[0].match(/[0-9]+/)) {
+        // @ts-ignore
+        formData.payment = Number(reg[0].match(/[0-9]+/)[0])
+    }
+})
 
 
 const openSwitch = (param:string) => {
@@ -93,7 +102,7 @@ const setChooseValue = (param:string) => {
 const rules = reactive({
     product: [{ required: true, message: '请输入商品名称' }],
     payment: [{ required: true, message: '请输入实付金额' }],
-    earn: [{ required: true, message: '请输入返单金额' }],
+    receive: [{ required: true, message: '请输入返单金额' }],
     fanli: [{ required: false, message: '请输入返利金额' }],
     phone: [
         {
@@ -104,13 +113,13 @@ const rules = reactive({
 })
 
 let totalEarn = computed(() => {
-    let res = Number(formData.earn)-Number(formData.payment)+Number(formData.fanli)
+    let res = Number(formData.receive)-Number(formData.payment)+Number(formData.fanli)
     return isNaN(res) ? 0 : res
 })
 
 const blur = () => {
-    if (isNaN(formData.earn)) {
-        formData.earn = null
+    if (isNaN(formData.receive)) {
+        formData.receive = null
     }
     if (isNaN(formData.payment)) {
         formData.payment = null
@@ -121,7 +130,6 @@ const blur = () => {
 }
 
 const submit = () => {
-
     formRef.value.validate().then(({ valid, errors }: any) => {
         if (valid) {
             save()
@@ -138,7 +146,7 @@ const save = () => {
     orderClass.set('date', formData.date)
     orderClass.set('product', formData.product)
     orderClass.set('payment', Number(formData.payment))
-    orderClass.set('earn', Number(formData.earn))
+    orderClass.set('receive', Number(formData.receive))
     orderClass.set('fanli', Number(formData.fanli))
     orderClass.set('isFinish', false)
     orderClass.set('username', userInfo.value.username)
@@ -155,7 +163,7 @@ const resetForm = () => {
     formData.date = dayjs().format('YYYY-MM-DD')
     formData.product = ''
     formData.payment = null
-    formData.earn = null
+    formData.receive = null
     formData.fanli = 0
 }
 
