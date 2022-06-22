@@ -37,7 +37,6 @@ import entryCom from '@/components/entry.vue'
 import {ref, reactive, onMounted, nextTick, watch} from "vue";
 import AV from "leancloud-storage";
 import { Dialog } from '@nutui/nutui';
-import { createFileClass, createQueryClass, createObjClass} from "@/leancloud";
 import {mainStore} from "@/store";
 import { storeToRefs } from "pinia";
 import { newImg } from "@/utils/utils";

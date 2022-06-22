@@ -63,7 +63,6 @@ const emit = defineEmits<{
 
 const store = mainStore()
 const { userInfo } = storeToRefs(store)
-let orderClass = createObjClass('order')
 let queryClass = createQueryClass('order')
 
 let endDate = ref(dayjs().format('YYYY-MM-DD'))
@@ -79,7 +78,7 @@ let formData = reactive({
     product: '',
     payment: <any>null,
     receive: <any>null,
-    fanli: 0.00
+    fanli: <any>null
 });
 
 watch(() => formData.product,val => {
@@ -128,7 +127,7 @@ const blur = () => {
         formData.payment = null
     }
     if (isNaN(formData.fanli)) {
-        formData.fanli = 0
+        formData.fanli = null
     }
 }
 
@@ -144,6 +143,7 @@ const submit = () => {
 
 
 const save = () => {
+    let orderClass = createObjClass('order')
     orderClass.set('channel', formData.channel)
     orderClass.set('count', Number(formData.count))
     orderClass.set('date', formData.date)
@@ -170,7 +170,7 @@ const resetForm = () => {
     formData.product = ''
     formData.payment = null
     formData.receive = null
-    formData.fanli = 0
+    formData.fanli = null
 }
 
 </script>

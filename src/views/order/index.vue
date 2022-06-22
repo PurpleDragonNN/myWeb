@@ -39,9 +39,10 @@ function submitOrderCb() {
 
 <style lang="scss" scoped>
 .container{
+    position: fixed;
   padding: 0;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   overflow: auto;
   display: flex;
   flex-direction: column;

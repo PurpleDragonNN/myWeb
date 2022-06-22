@@ -1,7 +1,7 @@
 <template>
     <nut-tabs auto-height v-model="state.tabVal" type="smile" @change="changeTabs">
         <nut-tabpane title="未完成">
-            <listTable :tab-num="0" @changeStatusCb="changeStatusCb"></listTable>
+            <listTable :tab-num="0" @refreshList="refreshList"></listTable>
         </nut-tabpane>
 
         <nut-tabpane title="已完成">
@@ -36,8 +36,9 @@ const changeTabs = ({paneKey}:{paneKey:number}) => {
         state.initTab2 = true
     }
 }
-const changeStatusCb = () => {
+const refreshList = () => {
     state.initTab1 = false
+    state.initTab2 = false
 }
 
 </script>

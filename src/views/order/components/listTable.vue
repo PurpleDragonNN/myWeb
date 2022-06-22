@@ -19,6 +19,9 @@
                             {{row[headItem.key]}}
                         </div>
                     </li>
+                    <template #left>
+                        <nut-button class="swipe-btn swipe-btn-del" shape="square" @click="delOrder(row)" type="danger">删除</nut-button>
+                    </template>
                     <template #right>
                         <nut-button class="swipe-btn" shape="square" type="success" @click="changeStatus(row)">完成</nut-button>
                     </template>
@@ -43,7 +46,6 @@ interface ValueObject {
 
 const store = mainStore()
 const { userInfo } = storeToRefs(store)
-let orderClass = createObjClass('order')
 let queryClass = createQueryClass('order')
 
 const props = defineProps({
@@ -53,7 +55,7 @@ const props = defineProps({
     }
 })
 const emit = defineEmits<{
-    (e: 'changeStatusCb'): void,
+    (e: 'refreshList'): void,
 }>()
 
 const page = reactive({
@@ -117,6 +119,18 @@ const refresh = (done:Function) => {
         done()
     })
 };
+
+
+const delOrder = (item:ValueObject) => {
+    let row = createWithoutData('order',item.objectId)
+    Toast.loading('loading');
+    row.destroy().then(res => {
+        Toast.hide();
+        getData(false)
+        emit('refreshList')
+    });
+};
+
 const changeStatus = (item:ValueObject) => {
     let row = createWithoutData('order',item.objectId)
     row.set('isFinish', true)
@@ -124,7 +138,7 @@ const changeStatus = (item:ValueObject) => {
     row.save().then(res => {
         Toast.hide();
         getData(false)
-        emit('changeStatusCb')
+        emit('refreshList')
     });
 };
 
@@ -132,6 +146,7 @@ const changeStatus = (item:ValueObject) => {
  *
  * @param isLoadMore true:滚动加载；false：初始化或刷新
  */
+
 const getData = (isLoadMore:boolean) => {
     if (isLoadMore) {
         page.currentPage ++
@@ -199,8 +214,6 @@ $border-color: #ececec;
         width: 100%;
         overflow: auto;
         overflow-x: hidden;
-        border-left: 1px solid $border-color;
-        border-top: 1px solid $border-color;
     }
 
     .list-row{
@@ -226,6 +239,7 @@ $border-color: #ececec;
             }
             &:nth-child(1){
                 width: 11%;
+                border-left: 1px solid $border-color;
             }
             &:nth-child(2){
                 width: 21%;
