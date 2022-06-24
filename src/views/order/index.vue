@@ -39,7 +39,7 @@ function submitOrderCb() {
 
 <style lang="scss" scoped>
 .container{
-    position: fixed;
+  position: fixed;
   padding: 0;
   width: 100%;
   height: 100%;

@@ -15,8 +15,9 @@
 
                 <nut-swipe v-for="row of table.listData" :key="row.objectId">
                     <li class="list-row">
-                        <div class="row-item" v-for="headItem of table.tableHead" :class="{[`${headItem.class}`]: headItem.class}">
-                            {{row[headItem.key]}}
+                        <div class="row-item" v-for="headItem of table.tableHead" :class="{[`${headItem.class}`]: headItem.class}" @click="copy(row[headItem.key])">
+                            <span v-if="headItem.key==='count' && row.count>1" class="red-color">{{row.count}}</span>
+                            <span v-else>{{row[headItem.key]}}</span>
                         </div>
                     </li>
                     <template #left v-if="props.tabNum !==0">
@@ -37,8 +38,9 @@ import {ref, onMounted, reactive, defineProps, defineEmits} from "vue";
 import {createFileClass, createQueryClass, createObjClass, createWithoutData} from "@/leancloud";
 import {mainStore} from "@/store";
 import { storeToRefs } from "pinia";
-import {Notify, Toast} from '@nutui/nutui';
-
+import {Toast} from '@nutui/nutui';
+import BigNumber from 'bignumber.js'
+import {copy} from '@/utils/utils'
 
 interface ValueObject {
     [propName:string]: any
@@ -169,25 +171,14 @@ const getData = (isLoadMore:boolean) => {
         page.total = count
         for(let item of res){
             let obj:any = item.toJSON()
-            obj.totalEarn = formatNumber(formatNumber(obj.receive,obj.fanli),-obj.payment)
+            obj.totalEarn = new BigNumber(obj.receive).multipliedBy(obj.count).plus(obj.fanli).minus(obj.payment)
             table.listData.push(obj)
         }
-        console.log(table.listData);
         if (table.listData.length >= count) {
             hasMore.value = false
         }
     })
 }
-
-// 解决精度丢失问题
-const formatNumber = (num1:number, num2:number) => {
-    num1 = String(num1).includes('.') ? Number(String(num1).replace('.', '')) : num1*100
-    num2 = String(num2).includes('.') ? Number(String(num2).replace('.', '')) : num2*100
-    return (num1+num2)/100
-}
-
-defineExpose({
-})
 
 </script>
 
@@ -230,9 +221,6 @@ $border-color: #ececec;
             border-bottom: 1px solid $border-color;
             line-height: 1.2;
 
-            &.red-color{
-                color: #fa2c19;
-            }
             &:nth-last-child(-n+2){
                 width: 6.5%;
             }
@@ -243,8 +231,8 @@ $border-color: #ececec;
             &:nth-child(2){
                 width: 21%;
             }
-        }
 
+        }
 
     }
 
@@ -259,34 +247,9 @@ $border-color: #ececec;
             line-height: 1.3;
         }
     }
-    /*.nut-table{
-        width: 100%;
-        :deep(.nut-table__main__head__tr__th){
-            min-width: 60px;
-            &:last-child,&:nth-last-child(2){
-                min-width: 40px;
-            }
-            &:nth-child(-n+2){
-            }
-        }
-        :deep(.nut-table__main__body__tr__td){
-            min-width: 60px;
-            &:last-child,&:nth-last-child(2){
-                min-width: 40px;
-            }
-            &:nth-child(3){
-                color: #fa2c19;
-            }
-        }
-        :deep(.nut-table__main__head__tr__th),
-        :deep(.nut-table__main__body__tr__th),
-        :deep(.nut-table__main__head__tr__td),
-        :deep(.nut-table__main__body__tr__td) {
-            padding: 6px 2px;
-            vertical-align: middle;
-        }
-    }*/
 }
-
+.red-color{
+    color: #fa2c19;
+}
 
 </style>

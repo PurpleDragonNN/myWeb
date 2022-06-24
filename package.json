@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@nutui/nutui": "^3.1.20",
+    "bignumber.js": "^9.0.2",
     "dayjs": "^1.11.3",
     "leancloud-storage": "^4.12.2",
     "pinia": "^2.0.14",
