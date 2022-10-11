@@ -1,11 +1,11 @@
 <template>
   <div class="ignore-container">
-    <nut-drag direction="y" :style="{right:'0px',bottom:'130px'}">
+    <nut-drag direction="y" :style="{right:'0px',bottom:'0px'}">
       <nut-fixednav :overlay="false" un-active-text="更多页面" active-text="收起" v-model:visible="visible">
         <template v-slot:list>
           <ul class="nut-fixednav__list">
-            <li class="nut-fixednav__list-item" @click="goPage(item)" v-for="item of navList" :class="{active: $route.path===item.path}">
-              <nut-icon :name="item.icon" class="nav-icon"></nut-icon>
+            <li class="nut-fixednav__list-item" @click="goPage(item)" v-for="item of navList" :class="{active: $route.path.includes(item.path)}">
+                <nut-icon :name="item.icon" class="nav-icon"></nut-icon>
               {{item.text}}
             </li>
           </ul>
@@ -50,7 +50,7 @@ router.options.routes.forEach((item:ValueObject,index:number) => {
   }
 })
 let navList: any = reactive(nav)
-
+console.log(navList);
 onMounted(() => {
 
 })

@@ -9,14 +9,36 @@ const router = createRouter({
             redirect: '/homepage',
         },
         {
-            path: '/radius',
-            name: 'radius',
-            component: ()=>import('../views/radius/index.vue'),
+            path: '/tools',
+            name: 'tools',
+            component: ()=>import('../views/tools/index.vue'),
             meta: {
-                title: '圆角矩形切割',
-                name: '圆角',
+                title: '在线工具',
+                name: '工具',
                 icon: 'check-normal'
-            }
+            },
+            children: [
+                {
+                    path: '/tools',
+                    redirect: '/tools/richText',
+                },
+                {
+                    path: '/tools/richText',
+                    name: 'richText',
+                    component: ()=>import('../views/tools/richText.vue'),
+                    meta: {
+                        title: '富文本格式化',
+                    }
+                },
+                {
+                    path: '/tools/radius',
+                    name: 'radius',
+                    component: ()=>import('../views/tools/radius.vue'),
+                    meta: {
+                        title: '圆角矩形切割',
+                    }
+                },
+            ]
         },
         {
             path: '/christmas',
