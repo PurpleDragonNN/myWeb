@@ -59,7 +59,7 @@ let format = () => {
     let arr = rule.value.split("\n")
     arr.forEach((item, index) => {
         if (item) {
-            let reg = /[一二三四五六七八九十]、/
+            let reg = /([一二三四五六七八九十][\.、])|(\d{1,2}[\.、])/
             if (reg.test(item)) {
                 arr[index] = `<h4>${item.trim()}</h4>`
             } else {
