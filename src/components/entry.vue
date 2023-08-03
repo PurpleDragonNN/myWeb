@@ -1,118 +1,115 @@
 <template>
-    <div>
-        <!--登录-->
-        <nut-dialog
-            :no-footer="true"
-            closeOnClickOverlay
-            v-model:visible="logVisible"
-            title="登 录"
-        >
-            <nut-form :model-value="loginForm" ref="loginRef">
-                <nut-form-item label="账号" label-width="60px" prop="account" required :rules="rules.account">
-                    <input class="nut-input-text" v-model="loginForm.account"
-                           placeholder="请输入用户名或邮箱" type="text"/>
-                </nut-form-item>
-                <nut-form-item label="密码" label-width="60px" prop="password" required :rules="rules.password">
-                    <input class="nut-input-text" v-model="loginForm.password"  @keydown.enter="login"
-                           placeholder="请输入密码" type="password"/>
-                </nut-form-item>
-                <nut-cell>
-                    <nut-button :loading="isLoading" type="primary" block @click="login">登录</nut-button>
-                </nut-cell>
-            </nut-form>
-            <div class="text-btn" @click="showDialog(true)">
-                前往注册 <nut-icon name="arrow-right"></nut-icon>
+    <!--登录-->
+    <nut-dialog
+        :no-footer="true"
+        closeOnClickOverlay
+        v-model:visible="logVisible"
+        title="登 录"
+    >
+        <nut-form :model-value="loginForm" ref="loginRef">
+            <nut-form-item label="账号" label-width="60px" prop="account" required :rules="rules.account">
+                <input class="nut-input-text" v-model="loginForm.account"
+                       placeholder="请输入用户名或邮箱" type="text"/>
+            </nut-form-item>
+            <nut-form-item label="密码" label-width="60px" prop="password" required :rules="rules.password">
+                <input class="nut-input-text" v-model="loginForm.password"  @keydown.enter="login"
+                       placeholder="请输入密码" type="password"/>
+            </nut-form-item>
+            <nut-cell>
+                <nut-button :loading="isLoading" type="primary" block @click="login">登录</nut-button>
+            </nut-cell>
+        </nut-form>
+        <div class="text-btn" @click="showDialog(true)">
+            前往注册 <nut-icon name="arrow-right"></nut-icon>
+        </div>
+    </nut-dialog>
+    <!--注册-->
+    <nut-dialog
+        :no-footer="true"
+        closeOnClickOverlay
+        v-model:visible="regVisible"
+        class="info-dialog"
+    >
+        <nut-uploader :file-list="defaultFileList" :before-upload="beforeUpload" accept="image/*" :auto-upload="false" :maximize="maximize"></nut-uploader>
+
+        <nut-form :model-value="registerForm" ref="registerRef" class="register-form">
+            <nut-form-item label="用户名" label-width="70px" prop="username" required :rules="rules.username">
+                <input class="nut-input-text" v-model="registerForm.username"
+                       placeholder="请输入姓名" type="text"/>
+            </nut-form-item>
+            <nut-form-item label="密码" label-width="70px" prop="password" required :rules="rules.password">
+                <input class="nut-input-text" v-model="registerForm.password"
+                       placeholder="请输入密码" type="password"/>
+            </nut-form-item>
+            <nut-form-item label="手机号码" label-width="70px" prop="phone" :rules="rules.phone">
+                <input class="nut-input-text" v-model="registerForm.phone" placeholder="请输入手机号码" type="text"/>
+            </nut-form-item>
+            <nut-form-item label="邮箱" label-width="40px" prop="email" :rules="rules.email">
+                <input class="nut-input-text" v-model="registerForm.email" placeholder="请输入邮箱" type="email"/>
+            </nut-form-item>
+            <nut-cell>
+                <nut-button block class="register-btn" type="primary" @click="submit">注册</nut-button>
+            </nut-cell>
+            <div class="text-btn" @click="showDialog(false)">
+                前往登录 <nut-icon name="arrow-right"></nut-icon>
             </div>
-        </nut-dialog>
-        <!--注册-->
-        <nut-dialog
-            :no-footer="true"
-            closeOnClickOverlay
-            v-model:visible="regVisible"
-            class="info-dialog"
-        >
-            <nut-uploader :file-list="defaultFileList" :before-upload="beforeUpload" accept="image/*" :auto-upload="false" :maximize="maximize"></nut-uploader>
+        </nut-form>
 
-            <nut-form :model-value="registerForm" ref="registerRef" class="register-form">
-                <nut-form-item label="用户名" label-width="70px" prop="username" required :rules="rules.username">
-                    <input class="nut-input-text" v-model="registerForm.username"
-                           placeholder="请输入姓名" type="text"/>
-                </nut-form-item>
-                <nut-form-item label="密码" label-width="70px" prop="password" required :rules="rules.password">
-                    <input class="nut-input-text" v-model="registerForm.password"
-                           placeholder="请输入密码" type="password"/>
-                </nut-form-item>
-                <nut-form-item label="手机号码" label-width="70px" prop="phone" :rules="rules.phone">
-                    <input class="nut-input-text" v-model="registerForm.phone" placeholder="请输入手机号码" type="text"/>
-                </nut-form-item>
-                <nut-form-item label="邮箱" label-width="40px" prop="email" :rules="rules.email">
-                    <input class="nut-input-text" v-model="registerForm.email" placeholder="请输入邮箱" type="email"/>
-                </nut-form-item>
-                <nut-cell>
-                    <nut-button block class="register-btn" type="primary" @click="submit">注册</nut-button>
-                </nut-cell>
-                <div class="text-btn" @click="showDialog(false)">
-                    前往登录 <nut-icon name="arrow-right"></nut-icon>
-                </div>
-            </nut-form>
+    </nut-dialog>
 
-        </nut-dialog>
+    <!--更新信息-->
+    <nut-dialog
+        :no-footer="true"
+        closeOnClickOverlay
+        v-model:visible="updateVisible"
+        class="info-dialog"
+    >
+        <nut-uploader :file-list="updateFileList" :before-upload="beforeUpload" accept="image/*" :auto-upload="false" :maximize="maximize"></nut-uploader>
 
-        <!--更新信息-->
-        <nut-dialog
-            :no-footer="true"
-            closeOnClickOverlay
-            v-model:visible="updateVisible"
-            class="info-dialog"
-        >
-            <nut-uploader :file-list="updateFileList" :before-upload="beforeUpload" accept="image/*" :auto-upload="false" :maximize="maximize"></nut-uploader>
+        <nut-form :model-value="updateForm" ref="updateRef" class="register-form">
+            <nut-form-item label="用户名" label-width="70px" prop="username" required :rules="rules.username">
+                <input class="nut-input-text" v-model="updateForm.username"
+                       placeholder="请输入姓名" type="text"/>
+            </nut-form-item>
+            <nut-form-item label="手机号码" label-width="70px" prop="phone" :rules="rules.phone">
+                <input class="nut-input-text" v-model="updateForm.phone" placeholder="请输入手机号码" type="text"/>
+            </nut-form-item>
+            <nut-form-item label="邮箱" label-width="40px" prop="email" :rules="rules.email">
+                <input class="nut-input-text" v-model="updateForm.email" placeholder="请输入邮箱" type="email"/>
+            </nut-form-item>
+            <nut-cell>
+                <nut-button :loading="isLoading" block class="register-btn" type="primary" @click="updateInfo">修改信息</nut-button>
+            </nut-cell>
+        </nut-form>
 
-            <nut-form :model-value="updateForm" ref="updateRef" class="register-form">
-                <nut-form-item label="用户名" label-width="70px" prop="username" required :rules="rules.username">
-                    <input class="nut-input-text" v-model="updateForm.username"
-                           placeholder="请输入姓名" type="text"/>
-                </nut-form-item>
-                <nut-form-item label="手机号码" label-width="70px" prop="phone" :rules="rules.phone">
-                    <input class="nut-input-text" v-model="updateForm.phone" placeholder="请输入手机号码" type="text"/>
-                </nut-form-item>
-                <nut-form-item label="邮箱" label-width="40px" prop="email" :rules="rules.email">
-                    <input class="nut-input-text" v-model="updateForm.email" placeholder="请输入邮箱" type="email"/>
-                </nut-form-item>
-                <nut-cell>
-                    <nut-button :loading="isLoading" block class="register-btn" type="primary" @click="updateInfo">修改信息</nut-button>
-                </nut-cell>
-            </nut-form>
+    </nut-dialog>
 
-        </nut-dialog>
+    <!--更新密码弹窗-->
+    <nut-dialog
+        :no-footer="true"
+        closeOnClickOverlay
+        v-model:visible="updatePWVisible"
+    >
+        <nut-form :model-value="updateForm" ref="updatePWRef">
+            <nut-form-item label="旧密码" label-width="80px" prop="oldPassword" required :rules="rules.password">
+                <input class="nut-input-text" v-model="updateForm.oldPassword"
+                       placeholder="请输入密码" type="password"/>
+            </nut-form-item>
 
-        <!--更新密码弹窗-->
-        <nut-dialog
-            :no-footer="true"
-            closeOnClickOverlay
-            v-model:visible="updatePWVisible"
-        >
-            <nut-form :model-value="updateForm" ref="updatePWRef">
-                <nut-form-item label="旧密码" label-width="80px" prop="oldPassword" required :rules="rules.password">
-                    <input class="nut-input-text" v-model="updateForm.oldPassword"
-                           placeholder="请输入密码" type="password"/>
-                </nut-form-item>
+            <nut-form-item label="新密码" label-width="80px" prop="newPassword" required :rules="rules.password">
+                <input class="nut-input-text" v-model="updateForm.newPassword"
+                       placeholder="请输入密码" type="password"/>
+            </nut-form-item>
 
-                <nut-form-item label="新密码" label-width="80px" prop="newPassword" required :rules="rules.password">
-                    <input class="nut-input-text" v-model="updateForm.newPassword"
-                           placeholder="请输入密码" type="password"/>
-                </nut-form-item>
-
-                <nut-form-item label="确认密码" label-width="80px" prop="repeatPassword" required :rules="rules.repeatPassword">
-                    <input class="nut-input-text" v-model="updateForm.repeatPassword"
-                           placeholder="请再次输入密码" type="password"/>
-                </nut-form-item>
-                <nut-cell>
-                    <nut-button :loading="isLoading" block class="register-btn" type="primary" @click="updatePassword">修改密码</nut-button>
-                </nut-cell>
-            </nut-form>
-        </nut-dialog>
-    </div>
-
+            <nut-form-item label="确认密码" label-width="80px" prop="repeatPassword" required :rules="rules.repeatPassword">
+                <input class="nut-input-text" v-model="updateForm.repeatPassword"
+                       placeholder="请再次输入密码" type="password"/>
+            </nut-form-item>
+            <nut-cell>
+                <nut-button :loading="isLoading" block class="register-btn" type="primary" @click="updatePassword">修改密码</nut-button>
+            </nut-cell>
+        </nut-form>
+    </nut-dialog>
 </template>
 
 <script setup lang="ts">
@@ -184,6 +181,15 @@ const updateForm = reactive({
     phone: '',
     email: ''
 });
+// 确认更新前的updateForm备份，若取消更新则恢复为修改前
+let beforeUpdateForm = reactive({
+    username: '',
+    oldPassword: '',
+    newPassword: '',
+    repeatPassword: '',
+    phone: '',
+    email: ''
+});
 
 
 const showErrorTips = (error: ValueObject) => {
@@ -199,7 +205,7 @@ const showDialog = (isShow:boolean) => {
 }
 
 // 表单校验
-const rules = reactive({
+const rules:any = reactive({
     username: [{ required: true, message: '请输入用户名' }],
     account: [{ required: true, message: '请输入用户名或邮箱' }],
     password: [{ required: true, message: '请输入密码' }],
@@ -253,6 +259,12 @@ watch(userInfo, val => {
         }
     }
 },{immediate: true,deep: true})
+
+watch(() => updateVisible.value, val => {
+    if (val) {
+        beforeUpdateForm = updateForm
+    }
+})
 
 // 注册表单提交
 const submit = () => {
@@ -321,6 +333,9 @@ const updateInfo = () => {
         if (valid) {
             (<any>Dialog)(<any>{
                 content: '确认修改信息？',
+                teleport: '.ignore-container',
+                popStyle: { 'z-index': 2222},
+                overlayStyle: { 'z-index': 2222},
                 onOk: () => {
                     userClass.setUsername(updateForm.username)
                     userClass.setMobilePhoneNumber(updateForm.phone)
@@ -344,6 +359,9 @@ const updateInfo = () => {
                         showErrorTips(error)
                     })
                 },
+                onClosed: () => {
+                    console.log(234234);
+                }
             });
         } else {
             console.log('error submit!!', errors);

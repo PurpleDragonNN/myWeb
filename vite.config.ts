@@ -11,7 +11,10 @@ export default defineConfig({
         chunkSizeWarningLimit: 1000
 	},
     resolve: {
-        alias: [{ find: '@', replacement: resolve(__dirname, 'src') }]
+        alias: [
+            { find: '@', replacement: resolve(__dirname, 'src') },
+            { find: '@com', replacement: resolve(__dirname, 'src/components') },
+        ]
     },
     css: {
         postcss: {
@@ -20,7 +23,7 @@ export default defineConfig({
                     unitToConvert: 'px', // 要转化的单位
                     viewportWidth: 750, // UI设计稿的宽度
                     // viewportHeight: 667, // UI设计稿的高度
-                    unitPrecision: 6, // 转换后的精度，即小数点位数
+                    unitPrecision: 3, // 转换后的精度，即小数点位数
                     propList: ['*'], // 指定转换的css属性的单位，*代表全部css属性的单位都进行转换
                     viewportUnit: 'vw', // 指定需要转换成的视窗单位，默认vw
                     fontViewportUnit: 'vw', // 指定字体需要转换成的视窗单位，默认vw
@@ -30,9 +33,20 @@ export default defineConfig({
                     replace: true, // 是否转换后直接更换属性值
                     exclude: [/node_modules/], // 设置忽略文件，用正则做目录名匹配
                     // exclude: [],
-                    landscape: false // 是否处理横屏情况
+                    landscape: true,       // 是否添加根据 landscapeWidth 生成的媒体查询条件
+                    landscapeUnit: 'rem',    // 横屏时使用的单位
+                    landscapeWidth: 750,   // 横屏时使用的视窗宽度
                 })
             ]
         }
-    }
-    })
+    },
+    server: {
+        /*proxy: {
+            "/api": {
+                target: "https://aip.baidubce.com",
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/\/api/, ""),
+            },
+        },*/
+    },
+})
