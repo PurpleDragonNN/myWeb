@@ -15,7 +15,7 @@ import AV from "leancloud-storage";
 AV.init({
     appId: 'zEzq4jmMzNJCXDyEpMzl4TaB-MdYXbMMI',
     appKey: 'lTEUwdAVwLqHvANYPoqzq7Zw',
-    serverURL: 'https://www.purpledragon.top'
+    serverURL: 'https://api.purpledragon.top'
 })
 
 // @ts-ignore
