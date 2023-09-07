@@ -13,8 +13,10 @@ export default function createCNAME(){
         closeBundle() {
             // 构建完成后在docs生成CNAME，以保持git Pages绑定的域名生效
             fs.writeFileSync('./docs/CNAME', 'purpledragon.top')
+            console.log('生成CNAME成功')
             // 构建完成后自动将构建生成的内容添加到暂存区
             execSync('git add docs').toString("utf8").trim();
+            console.log('构建内容已添加到git暂存区')
         },
     }
 }

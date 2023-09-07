@@ -1,1 +1,23 @@
 $red: rgb(250,44,25);
+$blue: #2c68ff;
+i{
+    //font-style: normal;
+}
+$lightGreen: rgb(218, 246, 244);
+$lightBlue: rgb(207, 236, 255);
+$lightPink: rgb(254, 225, 221);
+$lightPurple: rgb(234, 226, 254);
+$lightOrange: rgb(253, 241, 219);
+$gray: rgb(242, 244, 245);
+
+$darkPurple: rgb(106, 116, 205);
+.center{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+@keyframes blink {
+    50% {
+        opacity: 0.2;
+    }
+}

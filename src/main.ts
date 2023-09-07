@@ -2,7 +2,8 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router/index'
 import NutUI from "@nutui/nutui";
-import "@nutui/nutui/dist/style.css";
+// import "@nutui/nutui/dist/style.css";
+import "@nutui/nutui/dist/styles/themes/default.scss";
 import { createPinia } from 'pinia'
 import AV from "leancloud-storage";
 //华北
@@ -19,7 +20,10 @@ AV.init({
 })
 
 // @ts-ignore
-createApp(App).use(NutUI).use(router).use(createPinia()).mount('#app')
+const app = createApp(App)
+// 全局变量
+// app.config.globalProperties.$loading = false
+app.use(NutUI).use(router).use(createPinia()).mount('#app')
 
 
 // @ts-ignore

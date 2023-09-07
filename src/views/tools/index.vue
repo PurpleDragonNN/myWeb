@@ -1,8 +1,5 @@
 <template>
   <div class="tools-container">
-    <nut-menu>
-      <nut-menu-item v-model="defaultValue" :cols="2" :options="options" @change="handleChange" />
-    </nut-menu>
       <div class="router-view">
           <router-view></router-view>
       </div>

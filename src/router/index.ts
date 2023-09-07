@@ -19,11 +19,10 @@ interface ValueObject {
 }
 
 router.beforeEach((to:ValueObject,from:ValueObject,next:any) => {
-    let dom:any = window.document
-    dom.title = to.meta.title
+    window.document.title = to.meta.title
     if (to.meta.needLogin && !AV.User.current()) {
         if (from.path !== '/') {
-            Toast.warn('没登录你想干啥？');
+            Toast.warn('请先登录');
         }
         router.push('homepage')
     }

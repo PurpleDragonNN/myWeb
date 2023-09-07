@@ -10,7 +10,7 @@
         </div>
         <div class="canvas"></div>
         <nut-cell>
-            <nut-button type="primary" @click="ocrReq">ocr识别</nut-button>
+            <nut-button type="primary" @click="ocrReq('')">ocr识别</nut-button>
             <nut-button type="primary" @click="imgDeal">二值化并ocr识别</nut-button>
         </nut-cell>
         <nut-cell title="识别结果：" :desc="ocrRes" class="res_text"></nut-cell>
@@ -67,6 +67,7 @@ async function ocrReq(url: string) {
         return
     }
     console.log(url);
+    console.log(defaultFileList.value[0].url);
     var options = {
         'method': 'POST',
         // 接口测试使用
@@ -82,7 +83,7 @@ async function ocrReq(url: string) {
         },
     };
     axios(options).then((res:ValueObject) => {
-        if (!res.words_result.length) {
+        if (!res?.words_result?.length) {
             Toast.fail('未识别到文字')
             return
         }

@@ -4,25 +4,6 @@
             <i @click="visible=true" class="iconfont icon-round_menu_fill"></i>
         </nut-drag>
 
-        <!--        <nut-drag direction="y" :style="{right:'0px',bottom:'0px'}">
-                    <nut-fixednav :overlay="true" un-active-text="更多页面" active-text="收起" v-model:visible="visible">
-                        <template v-slot:list>
-                            <ul class="nut-fixednav__list">
-                                <li class="nut-fixednav__list-item" @click="goPage(item)" v-for="item of navList"
-                                    :class="{active: $route.path.includes(item.path)}">
-                                    <nut-icon :name="item.icon" class="nav-icon"></nut-icon>
-                                    {{ item.text }}
-                                </li>
-                            </ul>
-                        </template>
-                        <template v-slot:btn>
-                            <nut-icon name="left" color="#fff"></nut-icon>
-                            <nut-avatar v-if="userInfo && userInfo.headImg" size="40" :icon="userInfo.headImg.url"
-                                        shape="round"></nut-avatar>
-                            <span v-else class="text">更多</span>
-                        </template>
-                    </nut-fixednav>
-                </nut-drag>-->
         <nut-popup position="right" v-model:visible="visible" :style="{ width: '50%', height: '100%' }">
             <nut-sidenavbar class="main-side_bar">
                 <template v-for="item of navList">
@@ -51,25 +32,36 @@
                 </template>
             </nut-sidenavbar>
 
-            <router-link class="btn-nav" to="/homepage">
+            <div class="btn-nav btn-setting" @click="handleSetting">
+                <i class="iconfont icon-setting"></i>
+            </div>
+            <div class="btn-nav" @click="goHomePage">
                 <i class="iconfont icon-zhuye"></i>
-            </router-link>
+            </div>
         </nut-popup>
+        <entryCom ref="entryRef" @loginCallback="loginCallback"></entryCom>
+        <settingCom ref="settingRef" :menuItems="menuItems"></settingCom>
         <router-view/>
     </div>
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, onMounted} from "vue";
+import settingCom from '@/components/setting.vue'
+import entryCom from '@/components/entry.vue'
+import {ref, reactive, onMounted, getCurrentInstance, watch, nextTick} from "vue";
 import {useRouter, useRoute} from 'vue-router';
 import router from './router/index'
 import {mainStore} from "@/store";
 import {storeToRefs} from "pinia";
+import {Dialog, Toast} from "@nutui/nutui";
+import AV from "leancloud-storage";
+const { proxy }: any = getCurrentInstance();
 
 interface ValueObject {
     [propName: string]: any
 }
-
+const settingRef = ref<any>(null);
+const entryRef = ref<any>(null);
 const store = mainStore()
 const {userInfo} = storeToRefs(store)
 const $router: Object = useRouter()
@@ -77,28 +69,89 @@ const $route: Object = useRoute()
 let visible = ref(false)
 
 let nav: object[] = []
-/*router.options.routes.forEach((item: ValueObject, index: number) => {
-    if (index > 0) {
-        nav.push({
-            id: index,
-            text: item.meta.name,
-            icon: item.meta.icon,
-            path: item.path
-        })
-    }
-})*/
 nav = getRoutesInfo(router.options.routes)
 
 let navList: any = reactive(nav)
+
+const menuItems = [
+    {
+        name: '修改个人信息',
+        event: () => {
+            entryRef.value.updateVisible = true
+        }
+    },
+    {
+        name: '修改密码',
+        event: () => {
+            entryRef.value.updatePWVisible = true
+        }
+    },
+    {
+        name: '注销登录',
+        event: logout
+    }
+];
+
 onMounted(() => {
-    console.log(navList);
+    store.updateElRef({
+        entryRef: entryRef.value,
+        settingRef: settingRef.value,
+    })
 })
+watch(() => proxy.$loading, val => {
+    if (val) {
+        Toast.loading('loading', {
+            cover: true
+        });
+    } else {
+        Toast.hide();
+    }
+})
+watch(userInfo, async val => {
+    if (val) {
+        menuItems[2] = {
+            name: '注销登录',
+            event: logout
+        }
+    } else {
+        menuItems[2] = {
+            name: '登录',
+            event: showLoginDialog
+        }
+        await nextTick()
+        showLoginDialog()
+    }
+
+}, {immediate: true, deep: true})
+
+// 登录成功回调
+const loginCallback = () => {
+    store.fetchUserInfo()
+}
+
+// 显示登录弹窗
+function showLoginDialog(){
+    console.log(entryRef.value);
+    entryRef.value.logVisible = true
+}
+
+// 注销登录
+function logout(){
+    (<any>Dialog)(<any>{
+        content: '确认退出当前登录？',
+        onOk: () => {
+            AV.User.logOut().then(() => {
+                store.fetchUserInfo()
+            })
+        },
+    });
+}
 
 // 获取路由信息并整合
 function getRoutesInfo(routes: any): object[] {
     const arr = []
     for (const routeElement of routes) {
-        if (!routeElement.redirect) {
+        if (!routeElement.redirect && !routeElement.meta?.ignore) {
             const obj = {
                 key: routeElement.name,
                 title: routeElement.meta.name || routeElement.meta.title,
@@ -114,11 +167,19 @@ function getRoutesInfo(routes: any): object[] {
     return arr
 }
 
+function handleSetting () {
+    visible.value = false;
+    settingRef.value.actionsheetVisible=true
+}
 
 function goPage(item: ValueObject) {
-    console.log(item);
     visible.value = false;
     ($router as any).push(item.path)
+}
+
+function goHomePage(item: ValueObject) {
+    visible.value = false;
+    ($router as any).push('/homepage')
 }
 </script>
 <style lang="scss" scoped>
@@ -135,7 +196,7 @@ function goPage(item: ValueObject) {
         right: 20px;
 
         .icon-round_menu_fill {
-            color: $red;
+            color: $darkPurple;
             font-size: 34px;
         }
     }
@@ -144,7 +205,7 @@ function goPage(item: ValueObject) {
         height: 92%;
         .active{
             ::v-deep(span){
-                color: $red;
+                color: $darkPurple;
             }
         }
     }
@@ -155,9 +216,12 @@ function goPage(item: ValueObject) {
         right: 6px;
         padding: 8px 14px;
 
-        .icon-zhuye {
+        .iconfont {
             font-size: 26px;
-            color: $red;
+            color: $darkPurple;
+        }
+        &.btn-setting{
+            left: 6px;
         }
     }
 

@@ -164,8 +164,8 @@ let headImgFile = ref<any>(null)
 let updateHeadImgFile = ref<any>(null)
 
 const loginForm = reactive({
-    account: '',
-    password: '',
+    account: 'test',
+    password: 'test',
 });
 const registerForm = reactive({
     username: '',
