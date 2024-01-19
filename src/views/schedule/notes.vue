@@ -9,7 +9,7 @@
         </div>
 
         <div class="note-list">
-            <div class="note-item" :class="item.toJSON().bgColor+'-bg'" v-for="item of pageData" @click="edit(item.toJSON())">
+            <div class="note-item" :class="item.toJSON().bgColor+'-bg'" v-for="item of (isSearching?searchData:pageData)" @click="edit(item.toJSON())">
                 <div class="title">{{item.toJSON().title}}</div>
                 <div class="detail">{{item.toJSON().detail}}</div>
             </div>
@@ -19,33 +19,47 @@
 </template>
 <script setup lang="ts">
 
-import {ref, onMounted, nextTick, watch, getCurrentInstance} from "vue";
-import {createQueryClass} from "@/leancloud";
+import {ref, getCurrentInstance} from "vue";
+import {createQueryClass, createQueryOrClass} from "@/leancloud";
 interface ValueObject {
     [propName: string]: any
 }
 const { proxy }: any = getCurrentInstance();
 
-const pageData = ref<any>({})
+const pageData = ref<any>([])
 const searchValue = ref('')
-const searchData = ref<any>({})
+const searchData = ref<any>([])
 // 当前是否处于搜索状态
 const isSearching = ref(false)
 getPageData();
 function getPageData(){
     const queryNote = createQueryClass('note')
-    proxy.$toast.loading('loading',{cover:true})
+    proxy.$toast.loading('loading',{cover:true,duration: 0})
     queryNote.find().then((data) => {
+        proxy.$toast.hide()
         pageData.value = data
     });
 }
 
 function search(){
     if (searchValue.value) {
+        isSearching.value = true
+        proxy.$toast.loading('loading',{cover:true,duration: 0})
+        const queryTitle = createQueryClass('note')
+        queryTitle.contains ('title', searchValue.value);
+        const queryDetail = createQueryClass('note')
+        queryDetail.contains ('detail', searchValue.value);
+        const query = createQueryOrClass([queryTitle, queryDetail]);
+        query.find().then((data) => {
+            proxy.$toast.hide();
+            searchData.value = data
+        });
     } else {
+        isSearching.value = false
+        searchData.value = []
+        getPageData()
     }
 }
-
 function edit (item){
     sessionStorage.setItem('noteEditInfo', JSON.stringify(item))
     proxy.$router.push({
@@ -88,6 +102,7 @@ function edit (item){
     .note-list{
         display: flex;
         flex-wrap: wrap;
+        align-content: flex-start;
         width: 100%;
         padding: 0 40px;
         margin: 30px auto 0;
@@ -96,7 +111,7 @@ function edit (item){
         .note-item{
             display: flex;
             flex-direction: column;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             padding: 15px 20px;
             width: 48%;
             height: 300px;

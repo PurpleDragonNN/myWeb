@@ -29,7 +29,7 @@
 import {ref, nextTick, reactive, getCurrentInstance} from "vue";
 import {useRouter} from "vue-router";
 import {createObjClass, createWithoutData} from "@/leancloud";
-import {Notify, Toast} from "@nutui/nutui";
+import {Notify} from "@nutui/nutui";
 
 interface ValueObject {
     [propName: string]: any
@@ -74,9 +74,9 @@ function submit(){
                 const bgColor = color[Math.floor(Math.random() * 5)]
                 noteClass.set('bgColor', bgColor)
             }
-            proxy.$toast.loading('loading',{cover:true})
+            proxy.$toast.loading('loading',{cover:true,duration: 0})
             noteClass.save().then(res => {
-                Toast.hide();
+                proxy.$toast.hide();
                 Notify.success('保存成功');
                 proxy.$router.go(-1)
             }).catch(err =>{

@@ -99,7 +99,7 @@ import EventUtil from '@/utils/touchEvents'
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import {createObjClass, createQueryClass, createWithoutData} from "@/leancloud";
-import {Notify, Toast} from "@nutui/nutui";
+import {Notify} from "@nutui/nutui";
 dayjs.locale('zh-cn')
 
 interface AnyObject {
@@ -162,8 +162,9 @@ onMounted(() => {
 getPageData();
 function getPageData(){
     const queryTodo = createQueryClass('todo')
-    proxy.$toast.loading('loading',{cover:true})
+    proxy.$toast.loading('loading',{cover:true,duration: 0})
     queryTodo.find().then((data) => {
+        proxy.$toast.hide();
         dealData(data, pageData.value)
     });
 }
@@ -212,9 +213,9 @@ function switchStatus(key,index){
     if (!pageData.value[key][index]) return;
     let todoClass = createWithoutData('todo',pageData.value[key][index].id)
     todoClass.set('done', !pageData.value[key][index].done)
-    proxy.$toast.loading('loading',{cover:true})
+    proxy.$toast.loading('loading',{cover:true,duration: 0})
     todoClass.save().then(res => {
-        Toast.hide();
+        proxy.$toast.hide();
         pageData.value[key][index].done = !pageData.value[key][index].done
     }).catch(err =>{
         Notify.danger(err);
@@ -225,10 +226,11 @@ function search(){
     if (searchValue.value) {
         isSearching.value = true
         searchData.value = {}
-        proxy.$toast.loading('loading',{cover:true})
+        proxy.$toast.loading('loading',{cover:true,duration: 0})
         const queryTodo = createQueryClass('todo')
         queryTodo.contains ('title', searchValue.value);
         queryTodo.find().then((data) => {
+            proxy.$toast.hide();
             dealData(data, searchData.value)
         });
     } else {
@@ -250,6 +252,7 @@ function handleOptions(val){
     const id = moreBtnId.value.replace('more-btn-','');
     ({
         'edit': () => {
+            sessionStorage.setItem('todoEditInfo', JSON.stringify(arr[moreBtnKI[1]]))
             proxy.$router.push({
                 path: '/schedule/editTodo',
                 query: {
@@ -259,7 +262,7 @@ function handleOptions(val){
         },
         'del': () => {
             let todoClass = createWithoutData('todo',id)
-            proxy.$toast.loading('loading',{cover:true})
+            proxy.$toast.loading('loading',{cover:true,duration: 0})
             todoClass.destroy().then(res => {
                 proxy.$toast.hide()
                 if (searchValue.value) {

@@ -64,7 +64,7 @@ import {ref, onMounted, reactive, getCurrentInstance} from "vue";
 import dayjs from "dayjs";
 import {useRouter} from "vue-router";
 import {createObjClass, createWithoutData} from "@/leancloud";
-import {Notify, Toast} from "@nutui/nutui";
+import {Notify} from "@nutui/nutui";
 
 interface ValueObject {
     [propName: string]: any
@@ -92,7 +92,6 @@ const defaultTime = ref(new Date(dayjs().format('YYYY-MM-DD HH:mm:00')))
 if (proxy.$route.path === '/schedule/editTodo') {
     isEdit.value = true
     const editInfo = JSON.parse(sessionStorage.getItem('todoEditInfo'))
-    console.log(editInfo);
     formData.title = editInfo.title
     formData.desc = editInfo.desc
     formData.date = editInfo.dateTime.split(' ')[0]
@@ -109,10 +108,9 @@ function submit(){
             todoClass.set('desc', formData.desc)
             todoClass.set('done', false)
             todoClass.set('dateTime', formData.time?(formData.date+' '+formData.time):formData.date)
-                proxy.$toast.loading('loading',{cover:true})
-
+            proxy.$toast.loading('loading',{cover:true,duration: 0})
             todoClass.save().then(res => {
-                Toast.hide();
+                proxy.$toast.hide();
                 Notify.success('保存成功');
                 proxy.$router.go(-1)
             }).catch(err =>{
