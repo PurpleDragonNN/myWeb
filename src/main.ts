@@ -22,8 +22,8 @@ AV.init({
 })
 // 创建vConsole实例
 if (location.href.includes('vconsole')) {
-    new vConsole();
 }
+new vConsole();
 
 
 // @ts-ignore
