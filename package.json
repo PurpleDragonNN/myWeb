@@ -16,6 +16,7 @@
     "js-base64": "^3.7.5",
     "leancloud-storage": "^4.12.2",
     "pinia": "^2.0.14",
+    "vconsole": "^3.15.1",
     "vue": "^3.2.25"
   },
   "devDependencies": {

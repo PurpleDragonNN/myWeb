@@ -6,6 +6,8 @@ import NutUI from "@nutui/nutui";
 import "@nutui/nutui/dist/styles/themes/default.scss";
 import { createPinia } from 'pinia'
 import AV from "leancloud-storage";
+import vConsole from "vconsole";
+
 //华北
 /*AV.init({
     appId: 'RkUUB80oGO9vlo9htFYem297-gzGzoHsz',
@@ -18,6 +20,11 @@ AV.init({
     appKey: 'lTEUwdAVwLqHvANYPoqzq7Zw',
     serverURL: 'https://api.purpledragon.top'
 })
+// 创建vConsole实例
+if (location.href.includes('vconsole')) {
+    new vConsole();
+}
+
 
 // @ts-ignore
 const app = createApp(App)
