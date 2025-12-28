@@ -27,7 +27,19 @@
 import {onMounted, ref, watch} from "vue";
 import {mainStore} from "@/store";
 import { storeToRefs } from "pinia";
+import WebApp from '@twa-dev/sdk'
 
+// 1. 告知 TG 应用已加载完毕
+WebApp.ready();
+
+// 2. 自动扩充至全屏 (可选)
+WebApp.expand();
+
+console.log(WebApp.initDataUnsafe);
+// 3. 获取用户信息 (仅用于前端展示，不可信！)
+const user = WebApp.initDataUnsafe.user;
+console.log(user);
+console.log("用户ID:", user?.id, "用户名:", user?.first_name);
 interface ValueObject {
     [propName: string]: any
 }

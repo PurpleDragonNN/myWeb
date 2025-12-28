@@ -53,7 +53,7 @@ export default defineConfig({
         },
     },
     server: {
-        open: true, //配置自动启动浏览器
+        open: false, //配置自动启动浏览器
         proxy: {
             "/api": {
                 target: "https://aip.baidubce.com",

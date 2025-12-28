@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@nutui/nutui": "^3.3.8",
+    "@twa-dev/sdk": "^8.0.2",
     "axios": "^1.3.4",
     "bignumber.js": "^9.0.2",
     "dayjs": "^1.11.3",
