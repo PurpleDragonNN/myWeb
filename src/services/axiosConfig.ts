@@ -1,6 +1,6 @@
 import axios  from 'axios'
 import utils from "./utils";
-import {Toast} from '@nutui/nutui'
+import { showToast } from "@nutui/nutui";
 let baseURL
 
 const instance:any = axios.create({
@@ -16,7 +16,7 @@ instance.defaults.headers = {'Content-Type': 'application/x-www-form-urlencoded;
 // 请求拦截
 instance.interceptors.request.use((config:any) => {
         if (config.isLoading !== false) {
-            Toast.loading('');
+            showToast.loading('');
         }
     return config;
 },utils.catchError
@@ -24,7 +24,7 @@ instance.interceptors.request.use((config:any) => {
 
 // 响应拦截（配置请求回来的信息）
 instance.interceptors.response.use(function (response:any) {
-    Toast.hide();
+    showToast.hide();
     return response.data;
 }, utils.catchError);
 export default instance

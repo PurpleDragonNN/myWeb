@@ -6,7 +6,7 @@
         v-model:visible="logVisible"
         title="登 录"
     >
-        <nut-form :model-value="loginForm" ref="loginRef">
+        <nut-form :modelValue="loginForm" ref="loginRef">
             <nut-form-item label="账号" label-width="60px" prop="account" required :rules="rules.account">
                 <input class="nut-input-text" v-model="loginForm.account"
                        placeholder="请输入用户名或邮箱" type="text"/>
@@ -32,7 +32,7 @@
     >
         <nut-uploader :file-list="defaultFileList" :before-upload="beforeUpload" accept="image/*" :auto-upload="false" :maximize="maximize"></nut-uploader>
 
-        <nut-form :model-value="registerForm" ref="registerRef" class="register-form">
+        <nut-form :modelValue="registerForm" ref="registerRef" class="register-form">
             <nut-form-item label="用户名" label-width="70px" prop="username" required :rules="rules.username">
                 <input class="nut-input-text" v-model="registerForm.username"
                        placeholder="请输入姓名" type="text"/>
@@ -66,7 +66,7 @@
     >
         <nut-uploader :file-list="updateFileList" :before-upload="beforeUpload" accept="image/*" :auto-upload="false" :maximize="maximize"></nut-uploader>
 
-        <nut-form :model-value="updateForm" ref="updateRef" class="register-form">
+        <nut-form :modelValue="updateForm" ref="updateRef" class="register-form">
             <nut-form-item label="用户名" label-width="70px" prop="username" required :rules="rules.username">
                 <input class="nut-input-text" v-model="updateForm.username"
                        placeholder="请输入姓名" type="text"/>
@@ -90,7 +90,7 @@
         closeOnClickOverlay
         v-model:visible="updatePWVisible"
     >
-        <nut-form :model-value="updateForm" ref="updatePWRef">
+        <nut-form :modelValue="updateForm" ref="updatePWRef">
             <nut-form-item label="旧密码" label-width="80px" prop="oldPassword" required :rules="rules.password">
                 <input class="nut-input-text" v-model="updateForm.oldPassword"
                        placeholder="请输入密码" type="password"/>
@@ -115,7 +115,7 @@
 <script setup lang="ts">
 import {ref, onMounted, reactive, watch, defineEmits} from "vue";
 import { createFileClass, createQueryClass} from "@/leancloud";
-import {Dialog, Notify, Toast} from '@nutui/nutui';
+import {Dialog, showNotify, showToast} from '@nutui/nutui';
 import AV from "leancloud-storage";
 import {mainStore} from "@/store";
 import { storeToRefs } from "pinia";
@@ -194,9 +194,9 @@ let beforeUpdateForm = reactive({
 
 const showErrorTips = (error: ValueObject) => {
     if (CODE_TIPS[error.code]) {
-        Notify.danger(CODE_TIPS[error.code])
+        showNotify.danger(CODE_TIPS[error.code])
     } else {
-        Notify.danger(error.rawMessage)
+        showNotify.danger(error.rawMessage)
     }
 }
 const showDialog = (isShow:boolean) => {
@@ -313,7 +313,7 @@ const register = () => {
     isLoading.value = true
     newUserClass.signUp().then(() => {
         isLoading.value = false
-        Toast.success('注册成功，正在前往登录',);
+        showToast.success('注册成功，正在前往登录',);
         setTimeout(() => {
             showDialog(false)
             registerForm.username = ''
@@ -353,7 +353,7 @@ const updateInfo = () => {
                         isLoading.value = false
                         store.fetchUserInfo()
                         updateVisible.value = false
-                        Notify.success('修改成功');
+                        showNotify.success('修改成功');
                     }).catch((error:ValueObject) => {
                         isLoading.value = false
                         showErrorTips(error)
@@ -382,7 +382,7 @@ const updatePassword = () => {
                         useMasterKey: true
                     }).then(() => {
                         isLoading.value = false
-                        Notify.success('修改密码成功，请重新登录');
+                        showNotify.success('修改密码成功，请重新登录');
                         updatePWVisible.value = false
                         AV.User.logOut().then(res => {
                             store.fetchUserInfo()
@@ -390,7 +390,7 @@ const updatePassword = () => {
                     }).catch((error:ValueObject) => {
                         isLoading.value = false
                         if (error.code === 210) {
-                            Notify.danger('旧密码错误')
+                            showNotify.danger('旧密码错误')
                         } else {
                             showErrorTips(error)
                         }
@@ -406,7 +406,7 @@ const updatePassword = () => {
 
 const beforeUpload =  async (file:File[]) => {
     if (file[0].size > maximize.value) {
-        Notify.danger(`图片大小不能超过${maximize.value/1024}kb！`);
+        showNotify.danger(`图片大小不能超过${maximize.value/1024}kb！`);
         return file
     }
     let currentImg = updateVisible ? updateHeadImgFile : headImgFile
@@ -490,7 +490,7 @@ defineExpose({
     left: 50%;
     top: 40px;
     transform: translateX(-50%);
-    ::v-deep(.picture){
+    :deep(.picture){
         width: 100%;
         height: 100%;
         margin: auto;

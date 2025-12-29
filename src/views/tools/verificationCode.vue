@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import {ref, onMounted, nextTick, watch} from "vue";
 import axios from '@/services/axiosConfig'
-import {Notify,Toast} from "@nutui/nutui";
+import {showNotify,showToast} from "@nutui/nutui";
 import {compress} from "@/utils/images";
 
 interface ValueObject {
@@ -42,7 +42,7 @@ watch(() => defaultFileList.value, (val) => {
 
 const beforeUpload =  async (file:File[]) => {
     if (file[0].size > maximize.value) {
-        Notify.danger(`图片大小不能超过${maximize.value/1024}kb！`);
+        showNotify.danger(`图片大小不能超过${maximize.value/1024}kb！`);
         return file
     }
     let imgFile = ref<any>(null)
@@ -63,7 +63,7 @@ const SK = "Dfb2bsYp37EDu9x8gfd4BnKYNWkAFZw1"
 
 async function ocrReq(url: string) {
     if (!defaultFileList.value.length) {
-        Toast.warn('请先上传图片')
+        showToast.warn('请先上传图片')
         return
     }
     console.log(url);
@@ -84,7 +84,7 @@ async function ocrReq(url: string) {
     };
     axios(options).then((res:ValueObject) => {
         if (!res?.words_result?.length) {
-            Toast.fail('未识别到文字')
+            showToast.fail('未识别到文字')
             return
         }
         ocrRes.value = res.words_result.reduce((prev, cur) => {
@@ -110,7 +110,7 @@ function getAccessToken() {
 
 function imgDeal () {
     if (!defaultFileList.value.length) {
-        Toast.warn('请先上传图片')
+        showToast.warn('请先上传图片')
         return
     }
     let img = new Image()
@@ -259,7 +259,7 @@ function imgDeal () {
     .nut-uploader{
         min-width: 100px;
         min-height: 100px;
-        ::v-deep(.picture){
+        :deep(.picture){
             width: 100%;
             height: 100%;
             margin: auto;
@@ -283,7 +283,7 @@ function imgDeal () {
                 max-width: 100%;
             }
         }
-        ::v-deep(canvas){
+        :deep(canvas){
             width: 100%;
         }
     }

@@ -54,7 +54,7 @@ const handleChange = (val:string) => {
 
     .nut-menu{
         width: 100%;
-        ::v-deep(.nut-menu-item__content){
+        :deep(.nut-menu-item__content){
             width: 100%;
         }
     }

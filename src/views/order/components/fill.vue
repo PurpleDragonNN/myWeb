@@ -1,6 +1,6 @@
 <template>
     <div class="fill-container">
-        <nut-form :model-value="formData" ref="formRef">
+        <nut-form :modelValue="formData" ref="formRef">
             <nut-form-item prop="channel">
                 <nut-radiogroup v-model="formData.channel" direction="horizontal">
                     <nut-radio shape="button" label="京东">京东</nut-radio>
@@ -8,7 +8,7 @@
                 </nut-radiogroup>
             </nut-form-item>
             <nut-form-item label="下单数量" prop="count">
-                <nut-inputnumber v-model="formData.count" input-width="60" button-size="28" max="100" />
+                <nut-input-number v-model="formData.count" input-width="60" button-size="28" max="100" />
             </nut-form-item>
             <nut-form-item label="选择下单日期" prop="channel">
                 <span @click="openSwitch('dateVisible')">{{formData.date ? formData.date : '请选择'}}</span>
@@ -19,7 +19,7 @@
                     :default-value="formData.date"
                     start-date="2022-01-01"
                     :end-date="endDate"
-                    :is-auto-back-fill="true"
+                    :isAutoBackFill="true"
                 >
                 </nut-calendar>
             </nut-form-item>
@@ -29,13 +29,13 @@
             </nut-form-item>
 
             <nut-form-item label="返单金额" required prop="receive" :rules="rules.receive">
-                <nut-inputnumber v-model="formData.receive" @blur="blur" min="0" step="1" decimal-places="2"  input-width="60" button-size="28" />
+                <nut-input-number v-model="formData.receive" @blur="blur" min="0" step="1" decimal-places="2"  input-width="60" button-size="28" />
             </nut-form-item>
             <nut-form-item label="实付金额" required prop="payment" :rules="rules.payment">
-                <nut-inputnumber v-model="formData.payment" @click="clickPayment" @blur="blur" min="0" step="1" decimal-places="2" input-width="60" button-size="28" :disabled="formData.count>1" />
+                <nut-input-number v-model="formData.payment" @click="clickPayment" @blur="blur" min="0" step="1" decimal-places="2" input-width="60" button-size="28" :disabled="formData.count>1" />
             </nut-form-item>
             <nut-form-item label="返利金额" prop="fanli" :rules="rules.fanli">
-                <nut-inputnumber v-model="formData.fanli" @blur="blur" @click="clickFanli" min="0" step="1" decimal-places="2"  input-width="60" button-size="28" :disabled="formData.count>1" />
+                <nut-input-number v-model="formData.fanli" @blur="blur" @click="clickFanli" min="0" step="1" decimal-places="2"  input-width="60" button-size="28" :disabled="formData.count>1" />
             </nut-form-item>
             <nut-cell title="预计盈利">
                 <span v-if="!isNaN(totalEarn) && totalEarn">{{`${Number(formData.receive)}${formData.count>1 ? '*' + formData.count : ''} + ${Number(formData.fanli)} - ${Number(formData.payment)} = `}}</span>
@@ -55,7 +55,7 @@
             <div class="inputs-container">
                 <nut-cell v-for="(item, index) of paymentInputs">
                     <span>第{{index+1}}单：</span>
-                    <nut-inputnumber v-model="paymentInputs[index]" min="0" step="1" decimal-places="2" input-width="60" button-size="28"  />
+                    <nut-input-number v-model="paymentInputs[index]" min="0" step="1" decimal-places="2" input-width="60" button-size="28"  />
                 </nut-cell>
             </div>
             <nut-button block type="primary" @click="sumPayment">确认</nut-button>
@@ -71,7 +71,7 @@
             <div class="inputs-container">
                 <nut-cell v-for="(item, index) of fanliInputs">
                     <span>第{{index+1}}单：</span>
-                    <nut-inputnumber v-model="fanliInputs[index]" min="0" step="1" decimal-places="2" input-width="60" button-size="28"  />
+                    <nut-input-number v-model="fanliInputs[index]" min="0" step="1" decimal-places="2" input-width="60" button-size="28"  />
                 </nut-cell>
             </div>
             <nut-button block type="primary" @click="sumFanli">确认</nut-button>
@@ -87,7 +87,7 @@ import { createFileClass, createQueryClass, createObjClass} from "@/leancloud";
 import {mainStore} from "@/store";
 import { storeToRefs } from "pinia";
 import dayjs from "dayjs";
-import {Notify, Toast} from "@nutui/nutui";
+import {showNotify, showToast} from "@nutui/nutui";
 import BigNumber from "bignumber.js";
 interface ValueObject {
     [propName:string]: any
@@ -211,10 +211,10 @@ const save = () => {
     orderClass.set('isFinish', false)
     orderClass.set('username', userInfo.value.username)
     orderClass.set('userObjectId', userInfo.value.objectId)
-    Toast.loading('loading');
+    showToast.loading('loading');
     orderClass.save().then(res => {
-        Toast.hide();
-        Notify.success('提交成功');
+        showToast.hide();
+        showNotify.success('提交成功');
         resetForm()
         emit('submitOrderCb')
     });
@@ -232,7 +232,7 @@ const resetForm = () => {
 
 const sumPayment = () => {
     if (paymentInputs.value.some((item:object) => !item)) {
-        Notify.warn('每单必填!');
+        showNotify.warn('每单必填!');
         return
     }
     formData.payment = Number(paymentInputs.value.reduce((total:string, item:string|number) => {
@@ -243,7 +243,7 @@ const sumPayment = () => {
 
 const sumFanli = () => {
     if (fanliInputs.value.some((item:object) => !item)) {
-        Notify.warn('每单必填!');
+        showNotify.warn('每单必填!');
         return
     }
     formData.fanli = Number(fanliInputs.value.reduce((total:string, item:string|number) => {

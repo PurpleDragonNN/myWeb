@@ -1,11 +1,11 @@
 <template>
     <div class="todo">
         <div class="todo-header">
-            <nut-searchbar class="search-bar" placeholder="搜索" v-model="searchValue" @clear="search" @search="search">
+            <nut-search-bar class="search-bar" placeholder="搜索" v-model="searchValue" @clear="search" @search="search">
                 <template v-slot:leftin>
                     <nut-icon size="14" name="search2"></nut-icon>
                 </template>
-            </nut-searchbar>
+            </nut-search-bar>
         </div>
         <div v-show="!isSearching" class="todo-calendar" ref="calendarRef">
             <div class="todo-calendar-container todo-calendar-shrink" v-if="!isShowFullCalendar">
@@ -99,7 +99,7 @@ import EventUtil from '@/utils/touchEvents'
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import {createObjClass, createQueryClass, createWithoutData} from "@/leancloud";
-import {Notify} from "@nutui/nutui";
+import {showNotify, showToast} from "@nutui/nutui";
 dayjs.locale('zh-cn')
 
 interface AnyObject {
@@ -162,9 +162,9 @@ onMounted(() => {
 getPageData();
 function getPageData(){
     const queryTodo = createQueryClass('todo')
-    proxy.$toast.loading('loading',{cover:true,duration: 0})
+    showToast.loading('loading',{cover:true,duration: 0})
     queryTodo.find().then((data) => {
-        proxy.$toast.hide();
+        showToast.hide();
         dealData(data, pageData.value)
     });
 }
@@ -177,7 +177,7 @@ function dealData(data, showData) {
         }
         showData[date].push({...item.attributes,id:item.id})
     })
-    proxy.$toast.hide()
+    showToast.hide()
 }
 
 // 格式化日期显示
@@ -213,12 +213,12 @@ function switchStatus(key,index){
     if (!pageData.value[key][index]) return;
     let todoClass = createWithoutData('todo',pageData.value[key][index].id)
     todoClass.set('done', !pageData.value[key][index].done)
-    proxy.$toast.loading('loading',{cover:true,duration: 0})
+    showToast.loading('loading',{cover:true,duration: 0})
     todoClass.save().then(res => {
-        proxy.$toast.hide();
+        showToast.hide();
         pageData.value[key][index].done = !pageData.value[key][index].done
     }).catch(err =>{
-        Notify.danger(err);
+        showNotify.danger(err);
     })
 }
 
@@ -226,11 +226,11 @@ function search(){
     if (searchValue.value) {
         isSearching.value = true
         searchData.value = {}
-        proxy.$toast.loading('loading',{cover:true,duration: 0})
+        showToast.loading('loading',{cover:true,duration: 0})
         const queryTodo = createQueryClass('todo')
         queryTodo.contains ('title', searchValue.value);
         queryTodo.find().then((data) => {
-            proxy.$toast.hide();
+            showToast.hide();
             dealData(data, searchData.value)
         });
     } else {
@@ -262,9 +262,9 @@ function handleOptions(val){
         },
         'del': () => {
             let todoClass = createWithoutData('todo',id)
-            proxy.$toast.loading('loading',{cover:true,duration: 0})
+            showToast.loading('loading',{cover:true,duration: 0})
             todoClass.destroy().then(res => {
-                proxy.$toast.hide()
+                showToast.hide()
                 if (searchValue.value) {
                     search()
                 } else {
@@ -494,7 +494,7 @@ $colorPurple: rgb(10, 33, 83);
         }
 
     }
-    ::v-deep(.nut-popover-menu-item) {
+    :deep(.nut-popover-menu-item) {
         display: flex;
         align-items: center;
         .nutui-iconfont{

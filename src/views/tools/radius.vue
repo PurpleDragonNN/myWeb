@@ -5,7 +5,7 @@
                 <nut-uploader @failure="uploadFailure" :file-list="defaultFileList"  ref="uploaderEl" class="upload-btn"></nut-uploader>
 
             </nut-col>
-            <nut-inputnumber v-model="radiusVal"  button-size="30" input-width="50" />
+            <nut-input-number v-model="radiusVal"  button-size="30" input-width="50" />
 
 
         </nut-row>

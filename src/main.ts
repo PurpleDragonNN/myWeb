@@ -2,8 +2,8 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router/index'
 import NutUI from "@nutui/nutui";
-// import "@nutui/nutui/dist/style.css";
-import "@nutui/nutui/dist/styles/themes/default.scss";
+import "@nutui/nutui/dist/style.css";
+// import "@nutui/nutui/dist/styles/themes/default.scss";
 import { createPinia } from 'pinia'
 import AV from "leancloud-storage";
 import vConsole from "vconsole";

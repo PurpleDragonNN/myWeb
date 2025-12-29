@@ -5,32 +5,32 @@
         </nut-drag>
 
         <nut-popup position="right" v-model:visible="visible" :style="{ width: '50%', height: '100%' }">
-            <nut-sidenavbar class="main-side_bar">
+            <nut-side-navbar class="main-side_bar">
                 <template v-for="item of navList">
-                    <nut-subsidenavbar
+                    <nut-sub-side-navbar
                         :title="item.title"
                         :ikey="item.key"
                         v-if="item.children"
                     >
-                        <nut-sidenavbaritem
+                        <nut-side-navbar-item
                             :title="child.title"
                             :ikey="child.key"
                             :class="{'active': child.path === $route.path}"
                             v-for="child of item.children"
                             @click="goPage(child)"
                         >
-                        </nut-sidenavbaritem>
-                    </nut-subsidenavbar>
+                        </nut-side-navbar-item>
+                    </nut-sub-side-navbar>
 
-                    <nut-sidenavbaritem
+                    <nut-side-navbar-item
                         v-else :title="item.title"
                         :class="{'active': item.path === $route.path}"
                         :ikey="item.key"
                         @click="goPage(item)"
                     >
-                    </nut-sidenavbaritem>
+                    </nut-side-navbar-item>
                 </template>
-            </nut-sidenavbar>
+            </nut-side-navbar>
 
             <div class="btn-nav btn-setting" @click="handleSetting">
                 <i class="iconfont icon-setting"></i>
@@ -53,7 +53,7 @@ import {useRouter, useRoute} from 'vue-router';
 import router from './router/index'
 import {mainStore} from "@/store";
 import {storeToRefs} from "pinia";
-import {Dialog, Toast} from "@nutui/nutui";
+import {Dialog, showToast} from "@nutui/nutui";
 import AV from "leancloud-storage";
 const { proxy }: any = getCurrentInstance();
 
@@ -100,11 +100,11 @@ onMounted(() => {
 })
 watch(() => proxy.$loading, val => {
     if (val) {
-        Toast.loading('loading', {
+        showToast.loading('loading', {
             cover: true
         });
     } else {
-        Toast.hide();
+        showToast.hide();
     }
 })
 watch(userInfo, async val => {
@@ -204,7 +204,7 @@ function goHomePage(item: ValueObject) {
     .main-side_bar {
         height: 92%;
         .active{
-            ::v-deep(span){
+            :deep(span){
                 color: $darkPurple;
             }
         }
@@ -262,10 +262,10 @@ body {
     }
 }
 
-.nut-subsidenavbar {
+.nut-sub-side-navbar {
     float: none !important;
 
-    .nut-subsidenavbar__list {
+    .nut-sub-side-navbar__list {
         overflow: hidden;
     }
 }

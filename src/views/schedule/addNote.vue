@@ -7,7 +7,7 @@
             <div class="header-title">{{ isEdit?'编辑笔记':'新增笔记' }}</div>
         </header>
         <main>
-            <nut-form :model-value="formData" :rules="rules" ref="ruleForm">
+            <nut-form :modelValue="formData" :rules="rules" ref="ruleForm">
                 <nut-form-item prop="title" required>
                     <input class="nut-input-text" v-model="formData.title"
                            placeholder="标题" type="text" />
@@ -29,7 +29,7 @@
 import {ref, nextTick, reactive, getCurrentInstance} from "vue";
 import {useRouter} from "vue-router";
 import {createObjClass, createWithoutData} from "@/leancloud";
-import {Notify} from "@nutui/nutui";
+import {showNotify, showToast} from "@nutui/nutui";
 
 interface ValueObject {
     [propName: string]: any
@@ -74,13 +74,13 @@ function submit(){
                 const bgColor = color[Math.floor(Math.random() * 5)]
                 noteClass.set('bgColor', bgColor)
             }
-            proxy.$toast.loading('loading',{cover:true,duration: 0})
+            showToast.loading('loading',{cover:true,duration: 0})
             noteClass.save().then(res => {
-                proxy.$toast.hide();
-                Notify.success('保存成功');
+                showToast.hide();
+                showNotify.success('保存成功');
                 proxy.$router.go(-1)
             }).catch(err =>{
-                Notify.danger(err);
+                showNotify.danger(err);
             })
         } else {
             console.log(errors);
@@ -124,21 +124,21 @@ $colorPurple: rgb(10, 33, 83);
             .label{
                 color: $colorPurple;
             }
-            ::v-deep(input){
+            :deep(input){
                 height: 70px;
                 color: $colorPurple;
                 &.nut-input-text{
                     font-size: 40px;
                 }
             }
-            ::v-deep(.nut-textarea){
+            :deep(.nut-textarea){
                 max-height: calc(100vh - 200px);
             }
             .submit-container{
                 margin-top: 50px;
             }
         }
-        ::v-deep(.nut-picker__columnitem:last-child){
+        :deep(.nut-picker__columnitem:last-child){
             display: none;
         }
     }

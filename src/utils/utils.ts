@@ -1,4 +1,4 @@
-import {Notify} from '@nutui/nutui';
+import {showNotify} from '@nutui/nutui';
 //  图片地址
 export function getImage (url: string) {
     // return new URL(url, import.meta.url).href
@@ -19,7 +19,7 @@ export function newImg (url: string) {
  */
 export function copy (value:string) {
     navigator.clipboard.writeText(value).then(function() {
-        Notify.success('复制成功');
+        showNotify.success('复制成功');
     }, function() {
         console.log('copy fail');
         /* clipboard write failed */
@@ -35,7 +35,7 @@ export function copy (value:string) {
     if (document.execCommand('copy')) {
         input.select()
         document.execCommand('copy');
-        Notify.success('复制成功');
+        showNotify.success('复制成功');
     }
     document.body.removeChild(input);
 }*/

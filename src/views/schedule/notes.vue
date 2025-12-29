@@ -1,11 +1,11 @@
 <template>
     <div class="note">
         <div class="note-header">
-            <nut-searchbar class="search-bar" placeholder="搜索" v-model="searchValue" @clear="search" @search="search">
+            <nut-search-bar class="search-bar" placeholder="搜索" v-model="searchValue" @clear="search" @search="search">
                 <template v-slot:leftin>
                     <nut-icon size="14" name="search2"></nut-icon>
                 </template>
-            </nut-searchbar>
+            </nut-search-bar>
         </div>
 
         <div class="note-list">
@@ -21,6 +21,7 @@
 
 import {ref, getCurrentInstance} from "vue";
 import {createQueryClass, createQueryOrClass} from "@/leancloud";
+import {showToast} from "@nutui/nutui";
 interface ValueObject {
     [propName: string]: any
 }
@@ -34,9 +35,9 @@ const isSearching = ref(false)
 getPageData();
 function getPageData(){
     const queryNote = createQueryClass('note')
-    proxy.$toast.loading('loading',{cover:true,duration: 0})
+    showToast.loading('loading',{cover:true,duration: 0})
     queryNote.find().then((data) => {
-        proxy.$toast.hide()
+        showToast.hide()
         pageData.value = data
     });
 }
@@ -44,14 +45,14 @@ function getPageData(){
 function search(){
     if (searchValue.value) {
         isSearching.value = true
-        proxy.$toast.loading('loading',{cover:true,duration: 0})
+        showToast.loading('loading',{cover:true,duration: 0})
         const queryTitle = createQueryClass('note')
         queryTitle.contains ('title', searchValue.value);
         const queryDetail = createQueryClass('note')
         queryDetail.contains ('detail', searchValue.value);
         const query = createQueryOrClass([queryTitle, queryDetail]);
         query.find().then((data) => {
-            proxy.$toast.hide();
+            showToast.hide();
             searchData.value = data
         });
     } else {

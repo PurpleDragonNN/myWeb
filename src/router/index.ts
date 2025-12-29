@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import { Toast } from '@nutui/nutui';
+import { showToast } from '@nutui/nutui';
 import AV from "leancloud-storage";
 import routers from './map'
 
@@ -22,7 +22,7 @@ router.beforeEach((to:ValueObject,from:ValueObject,next:any) => {
     window.document.title = to.meta.title
     if (to.meta.needLogin && !AV.User.current()) {
         if (from.path !== '/') {
-            Toast.warn('请先登录');
+            showToast.warn('请先登录');
         }
         router.push('homepage')
     }

@@ -116,7 +116,7 @@ defineExpose({
             .nut-input{
                 padding-left: 0;
                 padding-right: 0;
-                ::v-deep(.input-text){
+                :deep(.input-text){
                     color: #666;
                 }
             }

@@ -4,7 +4,7 @@
             <div class="row-item" v-for="headItem of table.tableHead">{{headItem.title}}</div>
         </div>
         <div v-if="table.listData && table.listData.length" class="table-body" :id="`customScroll${props.tabNum}`">
-            <nut-infiniteloading
+            <nut-infinite-loading
                 :use-window='false'
                 :container-id="`customScroll${props.tabNum}`"
                 :has-more="hasMore"
@@ -27,7 +27,7 @@
                         <nut-button class="swipe-btn" shape="square" type="success" @click="changeStatus(row)">完成</nut-button>
                     </template>
                 </nut-swipe>
-            </nut-infiniteloading>
+            </nut-infinite-loading>
         </div>
         <nut-empty v-else description="暂无订单"></nut-empty>
     </ul>
@@ -38,7 +38,7 @@ import {ref, onMounted, reactive, defineProps, defineEmits} from "vue";
 import {createFileClass, createQueryClass, createObjClass, createWithoutData} from "@/leancloud";
 import {mainStore} from "@/store";
 import { storeToRefs } from "pinia";
-import {Toast} from '@nutui/nutui';
+import { showToast } from "@nutui/nutui";
 import BigNumber from 'bignumber.js'
 import {copy} from '@/utils/utils'
 
@@ -125,9 +125,9 @@ const refresh = (done:Function) => {
 
 const delOrder = (item:ValueObject) => {
     let row = createWithoutData('order',item.objectId)
-    Toast.loading('loading');
+    showToast.loading('loading');
     row.destroy().then(res => {
-        Toast.hide();
+        showToast.hide();
         getData(false)
         emit('refreshList')
     });
@@ -136,9 +136,9 @@ const delOrder = (item:ValueObject) => {
 const changeStatus = (item:ValueObject) => {
     let row = createWithoutData('order',item.objectId)
     row.set('isFinish', true)
-    Toast.loading('loading');
+    showToast.loading('loading');
     row.save().then(res => {
-        Toast.hide();
+        showToast.hide();
         getData(false)
         emit('refreshList')
     });
@@ -165,9 +165,9 @@ const getData = (isLoadMore:boolean) => {
     queryClass.limit(page.pageSize);
     queryClass.skip((page.currentPage-1) * page.pageSize);
 
-    Toast.loading('loading');
+    showToast.loading('loading');
     return queryClass.findAndCount().then(([res,count]) => {
-        Toast.hide();
+        showToast.hide();
         page.total = count
         for(let item of res){
             let obj:any = item.toJSON()

@@ -1,7 +1,9 @@
 <template>
     <div class="container" v-if="userInfo">
         <i @click="elRef.settingRef.actionsheetVisible=true" class="iconfont icon-setting"></i>
-        <nut-avatar size="60" :icon="userInfo.headImg ? userInfo.headImg.url : 'my'" shape="square"></nut-avatar>
+        <nut-avatar size="60">
+            <img :src="userInfo.headImg ? userInfo.headImg.url : 'my'" />
+        </nut-avatar>
         <span class="username">{{userInfo.username}}</span>
         <nut-cell-group class="info-group">
             <nut-cell v-if="userInfo.mobilePhoneNumber">
@@ -93,7 +95,7 @@ onMounted(() => {
             .nut-input{
                 padding-left: 0;
                 padding-right: 0;
-                ::v-deep(.input-text){
+                :deep(.input-text){
                     color: #666;
                 }
             }

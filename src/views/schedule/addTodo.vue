@@ -7,7 +7,7 @@
             <div class="header-title">{{ isEdit?'编辑待办':'新增待办' }}</div>
         </header>
         <main>
-            <nut-form :model-value="formData" :rules="rules" ref="ruleForm">
+            <nut-form :modelValue="formData" :rules="rules" ref="ruleForm">
                 <nut-form-item prop="title" required>
                     <div class="label">标题</div>
                     <input class="nut-input-text" v-model="formData.title"
@@ -43,17 +43,19 @@
                 :default-value="formData.date"
                 :start-date="null"
                 :end-date="null"
-                :is-auto-back-fill="true"
+                :isAutoBackFill="true"
             >
             </nut-calendar>
-            <nut-datepicker
-                v-model="defaultTime"
-                title="时间选择"
-                :formatter="formatter"
-                type="time"
-                @confirm="selectTime"
-                v-model:visible="timeVisible"
-            ></nut-datepicker>
+            <nut-popup v-model:visible="timeVisible" position="bottom">
+                <nut-date-picker
+                    v-model="defaultTime"
+                    title="时间选择"
+                    :formatter="formatter"
+                    type="time"
+                    @confirm="selectTime"
+                ></nut-date-picker>
+            </nut-popup>
+
         </main>
     </div>
 
@@ -64,7 +66,7 @@ import {ref, onMounted, reactive, getCurrentInstance} from "vue";
 import dayjs from "dayjs";
 import {useRouter} from "vue-router";
 import {createObjClass, createWithoutData} from "@/leancloud";
-import {Notify} from "@nutui/nutui";
+import {showNotify, showToast} from "@nutui/nutui";
 
 interface ValueObject {
     [propName: string]: any
@@ -108,13 +110,13 @@ function submit(){
             todoClass.set('desc', formData.desc)
             todoClass.set('done', false)
             todoClass.set('dateTime', formData.time?(formData.date+' '+formData.time):formData.date)
-            proxy.$toast.loading('loading',{cover:true,duration: 0})
+            showToast.loading('loading',{cover:true,duration: 0})
             todoClass.save().then(res => {
-                proxy.$toast.hide();
-                Notify.success('保存成功');
+                showToast.hide();
+                showNotify.success('保存成功');
                 proxy.$router.go(-1)
             }).catch(err =>{
-                Notify.danger(err);
+                showNotify.danger(err);
             })
         } else {
             console.log(errors);
@@ -134,6 +136,7 @@ function selectTime(params){
     const value = params.selectedValue
     defaultTime.value = new Date(dayjs().format('YYYY-MM-DD ')+`${value[0]}:${value[1]}:${value[2]}`)
     formData.time = `${value[0]}:${value[1]}:${value[2]}`
+    timeVisible.value = false
 }
 const formatter = (type: string, option) => {
     const obj = {
@@ -182,7 +185,7 @@ $colorPurple: rgb(10, 33, 83);
             .label{
                 color: $colorPurple;
             }
-            ::v-deep(input){
+            :deep(input){
                 height: 70px;
                 color: $colorPurple;
             }
@@ -199,7 +202,7 @@ $colorPurple: rgb(10, 33, 83);
                 margin-top: 50px;
             }
         }
-        ::v-deep(.nut-picker__columnitem:last-child){
+        :deep(.nut-picker__columnitem:last-child){
             display: none;
         }
     }
