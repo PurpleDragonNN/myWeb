@@ -1,17 +1,17 @@
 <template>
-    <nut-actionsheet
+    <nut-action-sheet
         v-model:visible="actionsheetVisible"
         :menu-items="props.menuItems"
         @choose="chooseItem"
     >
-    </nut-actionsheet>
+    </nut-action-sheet>
 
 </template>
 
 <script setup lang="ts">
 import {ref, reactive, onMounted, defineProps} from "vue";
 import AV from "leancloud-storage";
-import { Dialog } from '@nutui/nutui';
+import { showDialog } from '@nutui/nutui';
 import {mainStore} from "@/store";
 import { storeToRefs } from "pinia";
 
@@ -46,7 +46,7 @@ const chooseItem = (item:ValueObject ) => {
 
 // 更新信息
 const updateInfo = () => {
-    (<any>Dialog)(<any>{
+    showDialog(<any>{
         content: '确认保存当前修改？',
         onOk: () => {
             userClass.setUsername(userInfo.username)

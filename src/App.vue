@@ -53,7 +53,7 @@ import {useRouter, useRoute} from 'vue-router';
 import router from './router/index'
 import {mainStore} from "@/store";
 import {storeToRefs} from "pinia";
-import {Dialog, showToast} from "@nutui/nutui";
+import {showDialog, showToast} from "@nutui/nutui";
 import AV from "leancloud-storage";
 const { proxy }: any = getCurrentInstance();
 
@@ -137,7 +137,7 @@ function showLoginDialog(){
 
 // 注销登录
 function logout(){
-    (<any>Dialog)(<any>{
+    showDialog(<any>{
         content: '确认退出当前登录？',
         onOk: () => {
             AV.User.logOut().then(() => {

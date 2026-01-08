@@ -19,7 +19,7 @@
                 <nut-button :loading="isLoading" type="primary" block @click="login">登录</nut-button>
             </nut-cell>
         </nut-form>
-        <div class="text-btn" @click="showDialog(true)">
+        <div class="text-btn" @click="showRegisterDialog(true)">
             前往注册 <nut-icon name="arrow-right"></nut-icon>
         </div>
     </nut-dialog>
@@ -50,7 +50,7 @@
             <nut-cell>
                 <nut-button block class="register-btn" type="primary" @click="submit">注册</nut-button>
             </nut-cell>
-            <div class="text-btn" @click="showDialog(false)">
+            <div class="text-btn" @click="showRegisterDialog(false)">
                 前往登录 <nut-icon name="arrow-right"></nut-icon>
             </div>
         </nut-form>
@@ -115,7 +115,7 @@
 <script setup lang="ts">
 import {ref, onMounted, reactive, watch, defineEmits} from "vue";
 import { createFileClass, createQueryClass} from "@/leancloud";
-import {Dialog, showNotify, showToast} from '@nutui/nutui';
+import {showDialog, showNotify, showToast} from '@nutui/nutui';
 import AV from "leancloud-storage";
 import {mainStore} from "@/store";
 import { storeToRefs } from "pinia";
@@ -199,7 +199,7 @@ const showErrorTips = (error: ValueObject) => {
         showNotify.danger(error.rawMessage)
     }
 }
-const showDialog = (isShow:boolean) => {
+const showRegisterDialog = (isShow:boolean) => {
     regVisible.value = isShow
     logVisible.value = !isShow
 }
@@ -315,7 +315,7 @@ const register = () => {
         isLoading.value = false
         showToast.success('注册成功，正在前往登录',);
         setTimeout(() => {
-            showDialog(false)
+            showRegisterDialog(false)
             registerForm.username = ''
             registerForm.password = ''
             registerForm.phone = ''
@@ -331,7 +331,7 @@ const register = () => {
 const updateInfo = () => {
     updateRef.value.validate().then(({ valid, errors }: any) => {
         if (valid) {
-            (<any>Dialog)(<any>{
+            showDialog(<any>{
                 content: '确认修改信息？',
                 teleport: '.ignore-container',
                 popStyle: { 'z-index': 2222},
@@ -372,7 +372,7 @@ const updateInfo = () => {
 const updatePassword = () => {
     updatePWRef.value.validate().then(({ valid, errors }: any) => {
         if (valid) {
-            (<any>Dialog)(<any>{
+            showDialog(<any>{
                 content: '修改密码后需要重新登录，确认修改？',
                 onOk: () => {
                     isLoading.value = true
@@ -498,9 +498,6 @@ defineExpose({
         .nut-uploader__preview-img{
             width: 100%;
             height: 100%;
-            .nut-uploader__preview-img__c{
-                border-radius: 50%;
-            }
         }
     }
 }
